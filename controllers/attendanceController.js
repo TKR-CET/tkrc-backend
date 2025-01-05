@@ -11,7 +11,7 @@ const markAttendance = async (req, res) => {
     }
 
     // Validate periods is an array
-    if (!Array.isArray(periods) || periods.some(p => typeof p !== "number")) {
+    if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number")) {
       return res.status(400).json({ message: "Periods must be an array of numbers" });
     }
 
@@ -41,7 +41,6 @@ const markAttendance = async (req, res) => {
     });
 
     await newAttendance.save();
-    console.log(newAttendance);
 
     res.status(201).json({
       message: "Attendance successfully marked!",
@@ -84,7 +83,37 @@ const fetchAttendance = async (req, res) => {
   }
 };
 
+// Check Marked Attendance Periods
+const checkMarkedAttendance = async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
+    }
+
+    // Find all attendance records for the given date
+    const attendanceRecords = await Attendance.find({ date });
+
+    // Extract the marked periods
+    const markedPeriods = attendanceRecords.reduce((acc, record) => {
+      return acc.concat(record.periods);
+    }, []);
+
+    res.status(200).json({
+      periods: [...new Set(markedPeriods)], // Return unique periods
+    });
+  } catch (error) {
+    console.error("Error fetching marked attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while fetching marked attendance",
+      error: error.message || error,
+    });
+  }
+};
+
 module.exports = {
   markAttendance,
   fetchAttendance,
+  checkMarkedAttendance,
 };
