@@ -11,7 +11,8 @@ app.use(express.json());
 
 // CORS configuration
 const corsOptions = {
-  origin: "https://tkrcet.vercel.app", // Allow only this origin
+  origin: "https://tkrcet.vercel.app",
+  "http://localhost:5173/"
   methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
   optionsSuccessStatus: 200,
 };
