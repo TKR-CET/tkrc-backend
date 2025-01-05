@@ -9,13 +9,12 @@ const PORT = process.env.PORT || 5000; // Use environment variable for PORT or d
 // Middleware
 app.use(express.json());
 
-// CORS configuration
 const corsOptions = {
-  origin: "https://tkrcet.vercel.app",
-  "http://localhost:5173/"
+  origin: ["https://tkrcet.vercel.app", "http://localhost:5173"], // Define an array of allowed origins
   methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
   optionsSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
 // MongoDB connection
 mongoose
