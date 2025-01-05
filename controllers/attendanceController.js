@@ -1,5 +1,3 @@
-const express = require("express");
-const router = express.Router();
 const Attendance = require("../models/Attendance");
 
 // Mark Attendance  
@@ -114,8 +112,40 @@ const checkMarkedAttendance = async (req, res) => {
   }
 };
 
+// Update Attendance (Editing roll numbers, topic, and subject)
+const updateAttendance = async (req, res) => {
+  try {
+    const { date, periods, rollNumbers, topic, subject } = req.body;
+
+    if (!date || !periods || !rollNumbers || !topic || !subject) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Update attendance for specific date, periods, roll numbers
+    await Attendance.updateMany(
+      { date, periods: { $in: periods }, "attendance.rollNumber": { $in: rollNumbers } },
+      {
+        $set: {
+          "attendance.$[].topic": topic,
+          "attendance.$[].subject": subject
+        }
+      }
+    );
+
+    res.status(200).json({ message: "Attendance updated successfully" });
+
+  } catch (error) {
+    console.error("Error updating attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while updating attendance",
+      error: error.message || error,
+    });
+  }
+};
+
 module.exports = {
   markAttendance,
   fetchAttendance,
   checkMarkedAttendance,
+  updateAttendance,
 };
