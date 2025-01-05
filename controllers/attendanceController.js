@@ -1,5 +1,5 @@
 const Attendance = require("../models/Attendance");
-
+ 
 exports.markAttendance = async (req, res) => {
   const { date, periods, subject, topic, remarks, attendance } = req.body;
 
