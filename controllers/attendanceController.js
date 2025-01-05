@@ -110,9 +110,63 @@ const checkAttendance = async (req, res) => {
     });
   }
 };
+const updateAttendance = async (req, res) => {
+  try {
+    const { id, periods, subject, topic, remarks, attendance } = req.body;
+
+    // Validate required fields
+    if (!id || !periods || !subject || !topic || !attendance) {
+      return res.status(400).json({ message: "All mandatory fields are required" });
+    }
+
+    if (!Array.isArray(periods)) {
+      return res.status(400).json({ message: "Periods must be an array" });
+    }
+
+    const formattedAttendance = attendance.map(({ rollNumber, name, status }) => {
+      if (!rollNumber || !name || !status) {
+        throw new Error("Each attendance entry must include rollNumber, name, and status");
+      }
+      if (!["present", "absent"].includes(status.toLowerCase())) {
+        throw new Error(`Invalid status for rollNumber ${rollNumber}.`);
+      }
+      return { rollNumber, name, status: status.toLowerCase() };
+    });
+
+    const updatedAttendance = await Attendance.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          periods,
+          subject,
+          topic,
+          remarks,
+          attendance: formattedAttendance,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedAttendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
+
+    res.status(200).json({
+      message: "Attendance updated successfully",
+      data: updatedAttendance,
+    });
+  } catch (error) {
+    console.error("Error updating attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while updating attendance",
+      error: error.message || error,
+    });
+  }
+};
 
 module.exports = {
   markAttendance,
   fetchAttendance,
   checkAttendance,
+  updateAttendance
 };
