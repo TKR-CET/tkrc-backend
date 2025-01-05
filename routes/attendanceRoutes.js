@@ -1,16 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { 
-  markAttendance,
-  fetchAttendance,
-  checkMarkedAttendance,
-  updateAttendance,
-} = require("../controllers/attendanceController");
+const attendanceController = require("../controllers/AttendanceController");
 
-// Routes
-router.post("/mark-attendance", markAttendance);
-router.get("/fetch-attendance", fetchAttendance);
-router.get("/check", checkMarkedAttendance);
-router.put("/update-attendance", updateAttendance);
+// Route to mark attendance
+router.post("/mark-attendance", attendanceController.markAttendance);
+
+// Route to update attendance
+router.put("/update-attendance", attendanceController.updateAttendance);
+
+// Route to get all attendance records
+router.get("/all", attendanceController.getAllAttendance);
 
 module.exports = router;
