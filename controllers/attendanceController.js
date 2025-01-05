@@ -5,17 +5,14 @@ const markAttendance = async (req, res) => {
   try {
     const { date, periods, subject, topic, remarks, attendance } = req.body;
 
-    // Validate required fields
     if (!date || !periods || !subject || !topic || !attendance) {
       return res.status(400).json({ message: "All mandatory fields are required" });
     }
 
-    // Validate periods is an array
     if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number")) {
       return res.status(400).json({ message: "Periods must be an array of numbers" });
     }
 
-    // Validate attendance is an array of valid entries
     if (!Array.isArray(attendance)) {
       return res.status(400).json({ message: "Attendance must be an array of objects" });
     }
@@ -30,7 +27,6 @@ const markAttendance = async (req, res) => {
       return { rollNumber, name, status: status.toLowerCase() };
     });
 
-    // Save the attendance record
     const newAttendance = new Attendance({
       date,
       periods,
@@ -42,16 +38,10 @@ const markAttendance = async (req, res) => {
 
     await newAttendance.save();
 
-    res.status(201).json({
-      message: "Attendance successfully marked!",
-      data: newAttendance,
-    });
+    res.status(201).json({ message: "Attendance successfully marked!", data: newAttendance });
   } catch (error) {
     console.error("Error marking attendance:", error.message || error);
-    res.status(500).json({
-      message: "An error occurred while marking attendance",
-      error: error.message || error,
-    });
+    res.status(500).json({ message: "An error occurred while marking attendance", error: error.message || error });
   }
 };
 
@@ -70,16 +60,10 @@ const fetchAttendance = async (req, res) => {
       return res.status(404).json({ message: "No attendance records found for the given date" });
     }
 
-    res.status(200).json({
-      message: "Attendance records fetched successfully",
-      data: attendanceRecords,
-    });
+    res.status(200).json({ message: "Attendance records fetched successfully", data: attendanceRecords });
   } catch (error) {
     console.error("Error fetching attendance:", error.message || error);
-    res.status(500).json({
-      message: "An error occurred while fetching attendance",
-      error: error.message || error,
-    });
+    res.status(500).json({ message: "An error occurred while fetching attendance", error: error.message || error });
   }
 };
 
@@ -92,54 +76,63 @@ const checkMarkedAttendance = async (req, res) => {
       return res.status(400).json({ message: "Date is required" });
     }
 
-    // Find all attendance records for the given date
     const attendanceRecords = await Attendance.find({ date });
 
-    // Extract the marked periods
     const markedPeriods = attendanceRecords.reduce((acc, record) => {
       return acc.concat(record.periods);
     }, []);
 
-    res.status(200).json({
-      periods: [...new Set(markedPeriods)], // Return unique periods
-    });
+    res.status(200).json({ periods: [...new Set(markedPeriods)] }); // Unique periods
   } catch (error) {
     console.error("Error fetching marked attendance:", error.message || error);
-    res.status(500).json({
-      message: "An error occurred while fetching marked attendance",
-      error: error.message || error,
-    });
+    res.status(500).json({ message: "An error occurred while fetching marked attendance", error: error.message || error });
   }
 };
 
-// Update Attendance (Editing roll numbers, topic, and subject)
+// Update Attendance
 const updateAttendance = async (req, res) => {
   try {
-    const { date, periods, rollNumbers, topic, subject } = req.body;
+    const { date, periods, updatedAttendance, topic, subject, remarks } = req.body;
 
-    if (!date || !periods || !rollNumbers || !topic || !subject) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!date || !periods || !updatedAttendance) {
+      return res.status(400).json({ message: "Date, periods, and updated attendance are required" });
     }
 
-    // Update attendance for specific date, periods, roll numbers
-    await Attendance.updateMany(
-      { date, periods: { $in: periods }, "attendance.rollNumber": { $in: rollNumbers } },
-      {
-        $set: {
-          "attendance.$[].topic": topic,
-          "attendance.$[].subject": subject
-        }
+    if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number")) {
+      return res.status(400).json({ message: "Periods must be an array of numbers" });
+    }
+
+    if (!Array.isArray(updatedAttendance)) {
+      return res.status(400).json({ message: "Updated attendance must be an array of objects" });
+    }
+
+    const formattedAttendance = updatedAttendance.map(({ rollNumber, name, status }) => {
+      if (!rollNumber || !name || !status) {
+        throw new Error("Each attendance entry must include rollNumber, name, and status");
       }
-    );
+      if (!["present", "absent"].includes(status.toLowerCase())) {
+        throw new Error(`Invalid status for rollNumber ${rollNumber}. Status must be 'present' or 'absent'.`);
+      }
+      return { rollNumber, name, status: status.toLowerCase() };
+    });
 
-    res.status(200).json({ message: "Attendance updated successfully" });
+    const attendanceRecord = await Attendance.findOne({ date, periods });
 
+    if (!attendanceRecord) {
+      return res.status(404).json({ message: "No attendance record found for the specified date and periods" });
+    }
+
+    attendanceRecord.attendance = formattedAttendance;
+    if (topic) attendanceRecord.topic = topic;
+    if (subject) attendanceRecord.subject = subject;
+    if (remarks) attendanceRecord.remarks = remarks;
+
+    await attendanceRecord.save();
+
+    res.status(200).json({ message: "Attendance successfully updated!", data: attendanceRecord });
   } catch (error) {
     console.error("Error updating attendance:", error.message || error);
-    res.status(500).json({
-      message: "An error occurred while updating attendance",
-      error: error.message || error,
-    });
+    res.status(500).json({ message: "An error occurred while updating attendance", error: error.message || error });
   }
 };
 
