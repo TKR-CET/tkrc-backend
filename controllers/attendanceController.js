@@ -1,5 +1,5 @@
 const Attendance = require("../models/Attendance");
-
+ 
 // Mark Attendance  
 const markAttendance = async (req, res) => {
   try {
