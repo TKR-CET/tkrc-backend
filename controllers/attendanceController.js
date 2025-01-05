@@ -1,7 +1,6 @@
 const Attendance = require("../models/Attendance");
 
 // Mark Attendance
-
 const markAttendance = async (req, res) => {
   try {
     const { date, periods, subject, topic, remarks, attendance } = req.body;
@@ -12,7 +11,7 @@ const markAttendance = async (req, res) => {
     }
 
     // Validate periods is an array
-    if (!Array.isArray(periods) || periods.some(p => typeof p !== "number")) {
+    if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number")) {
       return res.status(400).json({ message: "Periods must be an array of numbers" });
     }
 
@@ -42,7 +41,6 @@ const markAttendance = async (req, res) => {
     });
 
     await newAttendance.save();
-    console.log(newAttendance);
 
     res.status(201).json({
       message: "Attendance successfully marked!",
@@ -57,7 +55,7 @@ const markAttendance = async (req, res) => {
   }
 };
 
-// Fetch Attendance
+// Fetch Attendance Records
 const fetchAttendance = async (req, res) => {
   try {
     const { date } = req.query;
@@ -85,7 +83,36 @@ const fetchAttendance = async (req, res) => {
   }
 };
 
+// Check Existing Attendance
+const checkAttendance = async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
+    }
+
+    // Fetch attendance records for the specific date
+    const attendanceRecords = await Attendance.find({ date });
+
+    // Extract periods that already have attendance marked
+    const markedPeriods = attendanceRecords.flatMap((record) => record.periods);
+
+    res.status(200).json({
+      message: "Checked existing attendance records successfully",
+      periods: [...new Set(markedPeriods)], // Return unique periods
+    });
+  } catch (error) {
+    console.error("Error checking attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while checking attendance",
+      error: error.message || error,
+    });
+  }
+};
+
 module.exports = {
   markAttendance,
   fetchAttendance,
+  checkAttendance,
 };
