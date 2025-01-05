@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {
-  markAttendance,
+  markAttendance, 
   fetchAttendance,
   checkMarkedAttendance,
   updateAttendance, // Import the newly added updateAttendance controller
