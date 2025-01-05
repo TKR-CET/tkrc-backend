@@ -4,7 +4,7 @@ const { markAttendance, fetchAttendance, checkAttendance } = require("../control
 const router = express.Router();
 
 router.post("/mark-attendance", markAttendance);
-router.get("/attendance", fetchAttendance);
-router.get("/attendance/check", checkAttendance);
+router.get("/fetch-attendance", fetchAttendance);
+router.get("/check", checkAttendance);
 
 module.exports = router;
