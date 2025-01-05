@@ -1,63 +1,90 @@
 const Attendance = require("../models/Attendance");
- 
-exports.markAttendance = async (req, res) => {
-  const { date, periods, subject, topic, remarks, attendance } = req.body;
 
+// Mark Attendance
+const markAttendance = async (req, res) => {
   try {
-    const existingRecord = await Attendance.findOne({ date, periods });
+    const { date, periods, subject, topic, remarks, attendance } = req.body;
 
-    if (existingRecord) {
-      return res.status(400).json({
-        message: "Attendance for the selected date and periods already exists.",
-      });
+    // Validate required fields
+    if (!date || !periods || !subject || !topic || !attendance) {
+      return res.status(400).json({ message: "All mandatory fields are required" });
     }
 
-    const newRecord = new Attendance({
+    // Validate periods is an array
+    if (!Array.isArray(periods) || periods.some(p => typeof p !== "number")) {
+      return res.status(400).json({ message: "Periods must be an array of numbers" });
+    }
+
+    // Validate attendance is an array of valid entries
+    if (!Array.isArray(attendance)) {
+      return res.status(400).json({ message: "Attendance must be an array of objects" });
+    }
+
+    const formattedAttendance = attendance.map(({ rollNumber, name, status }) => {
+      if (!rollNumber || !name || !status) {
+        throw new Error("Each attendance entry must include rollNumber, name, and status");
+      }
+      if (!["present", "absent"].includes(status.toLowerCase())) {
+        throw new Error(`Invalid status for rollNumber ${rollNumber}. Status must be 'present' or 'absent'.`);
+      }
+      return { rollNumber, name, status: status.toLowerCase() };
+    });
+
+    // Save the attendance record
+    const newAttendance = new Attendance({
       date,
       periods,
       subject,
       topic,
       remarks,
-      attendance,
+      attendance: formattedAttendance,
     });
 
-    await newRecord.save();
-    res.status(201).json({ message: "Attendance marked successfully!" });
+    await newAttendance.save();
+    console.log(newAttendance);
+
+    res.status(201).json({
+      message: "Attendance successfully marked!",
+      data: newAttendance,
+    });
   } catch (error) {
-    console.error("Error marking attendance:", error);
-    res.status(500).json({ message: "Failed to mark attendance" });
+    console.error("Error marking attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while marking attendance",
+      error: error.message || error,
+    });
   }
 };
 
-exports.updateAttendance = async (req, res) => {
-  const { date, periods, updatedAttendance, subject, topic, remarks } = req.body;
-
+// Fetch Attendance
+const fetchAttendance = async (req, res) => {
   try {
-    const attendanceRecord = await Attendance.findOne({ date, periods });
+    const { date } = req.query;
 
-    if (!attendanceRecord) {
-      return res.status(404).json({ message: "No attendance record found." });
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
     }
 
-    attendanceRecord.attendance = updatedAttendance || attendanceRecord.attendance;
-    attendanceRecord.subject = subject || attendanceRecord.subject;
-    attendanceRecord.topic = topic || attendanceRecord.topic;
-    attendanceRecord.remarks = remarks || attendanceRecord.remarks;
+    const attendanceRecords = await Attendance.find({ date });
 
-    await attendanceRecord.save();
-    res.status(200).json({ message: "Attendance updated successfully!" });
+    if (!attendanceRecords.length) {
+      return res.status(404).json({ message: "No attendance records found for the given date" });
+    }
+
+    res.status(200).json({
+      message: "Attendance records fetched successfully",
+      data: attendanceRecords,
+    });
   } catch (error) {
-    console.error("Error updating attendance:", error);
-    res.status(500).json({ message: "Failed to update attendance" });
+    console.error("Error fetching attendance:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while fetching attendance",
+      error: error.message || error,
+    });
   }
 };
 
-exports.getAllAttendance = async (req, res) => {
-  try {
-    const records = await Attendance.find();
-    res.status(200).json(records);
-  } catch (error) {
-    console.error("Error fetching attendance records:", error);
-    res.status(500).json({ message: "Failed to fetch attendance records" });
-  }
+module.exports = {
+  markAttendance,
+  fetchAttendance,
 };
