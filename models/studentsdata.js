@@ -26,6 +26,6 @@ const YearSchema = new mongoose.Schema({
 });
 
 // Main Model
-const YearModel = mongoose.model('Students', YearSchema);
+const YearModel = mongoose.model('StudentData', YearSchema);
 
 module.exports = YearModel;
