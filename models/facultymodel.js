@@ -32,28 +32,31 @@ const timetableSchema = new mongoose.Schema({
 const facultySchema = new mongoose.Schema({
   name: {
     type: String,
-  
-    trim: true,
+  required:true;
+
   },
   facultyId: {
     type: String,
     unique: true,
-    trim: true
+     required:true;
+    
   },
   image: {
     type: String,
     default: "",
-    trim: true
+     required:true;
+
   },
   role: {
     type: String,
+     required:true;
 
-    trim: true
   },
   department: {
     type: String,
+     required:true;
 
-    trim: true
+    
   },
   timetable: {
     type: timetableSchema,
