@@ -18,7 +18,7 @@ const YearSchema = new mongoose.Schema({
 });
 
 // Main Model
-const YearModel = mongoose.model('Year', YearSchema);
+const YearModel = mongoose.model('Subjects', YearSchema);
 
 module.exports = YearModel;
 
