@@ -2,7 +2,7 @@
 
 const express = require("express");
 const Faculty = require("../models/facultymodel.js"); // Path to the Faculty model
-   
+     
 const addFaculty = async (req, res) => {
   try {
     const { name, facultyId, image, role, department, timetable } = req.body;
