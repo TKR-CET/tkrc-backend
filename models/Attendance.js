@@ -19,6 +19,7 @@ const attendanceSchema = new mongoose.Schema({
   },
   remarks: {
     type: String,
+    required:true;
   },
   attendance: [
     {
