@@ -11,6 +11,6 @@ router.delete('/delete-year/:id', yearController.deleteYear);
 
 // Add department and subject
 router.post('/add-department/:yearId/departments', yearController.addDepartmentToYear);
-router.post('/add-subject/:yearId/departments/:departmentId/subjects', yearController.addSubjectToDepartment);
+router.post('/add-subject/:yearId/departments/:departmentId/Subjects', yearController.addSubjectToDepartment);
 
 module.exports = router;
