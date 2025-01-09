@@ -1,34 +1,33 @@
-
 const mongoose = require("mongoose");
 
 const timetableSchema = new mongoose.Schema({
   monday: {
-    type: [String], // Array of subjects or tasks for Monday
+    type: [String],
     default: [],
     required:true;
   },
   tuesday: {
-    type: [String], // Array of subjects or tasks for Tuesday
+    type: [String],
     default: [],
      required:true;
   },
   wednesday: {
-    type: [String], // Array of subjects or tasks for Wednesday
+    type: [String],
     default: [],
      required:true;
   },
   thursday: {
-    type: [String], // Array of subjects or tasks for Thursday
+    type: [String],
     default: [],
      required:true;
   },
   friday: {
-    type: [String], // Array of subjects or tasks for Friday
+    type: [String],
     default: [],
      required:true;
   },
   saturday: {
-    type: [String], // Array of subjects or tasks for Saturday
+    type: [String],
     default: [],
      required:true;
   },
@@ -46,11 +45,15 @@ const facultySchema = new mongoose.Schema({
     unique: true,
   },
   image: {
-    type: String, // URL for the faculty's image
+    type: String,
     default: "",
   },
   role: {
-    type: String, // e.g., "Professor", "Assistant Professor", etc.
+    type: String,
+    required: true,
+  },
+  department: {
+    type: String, // E.g., "Computer Science", "Electrical Engineering"
     required: true,
   },
   timetable: {
