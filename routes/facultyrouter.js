@@ -2,7 +2,7 @@ const express = require("express");
 const {
   addFaculty,
   getAllFaculty,
-  getFacultyById,
+  getFacultyById,  
   updateFaculty,
   deleteFaculty,
 } = require("../controllers/facultycontroller"); // Path to the controller
