@@ -8,7 +8,7 @@ const getAllYears = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error fetching years', error });
   }
-};
+};  
 
 // Get a specific year by ID
 const getYearById = async (req, res) => {
