@@ -4,32 +4,32 @@ const timetableSchema = new mongoose.Schema({
   monday: {
     type: [String],
     default: [],
-    required:true;
+    
   },
   tuesday: {
     type: [String],
     default: [],
-     required:true;
+     
   },
   wednesday: {
     type: [String],
     default: [],
-     required:true;
+     
   },
   thursday: {
     type: [String],
     default: [],
-     required:true;
+     
   },
   friday: {
     type: [String],
     default: [],
-     required:true;
+     
   },
   saturday: {
     type: [String],
     default: [],
-     required:true;
+     
   },
 });
 
