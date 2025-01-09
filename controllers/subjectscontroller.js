@@ -1,4 +1,4 @@
-const YearModel = require('../models/Year'); // Adjust the path based on your project structure
+const YearModel = require('../models/subjectsdata'); // Adjust the path based on your project structure
 
 // Get all years
 const getAllYears = async (req, res) => {
