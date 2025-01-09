@@ -4,7 +4,7 @@ const yearController = require('../controllers/subjectscontroller'); // Adjust p
 
 // CRUD operations for years
 router.get('/get-years', yearController.getAllYears);
-router.get('/year/:id', yearController.getYearById);
+router.get('/get-year/:id', yearController.getYearById);
 router.post('/add-year', yearController.addYear);
 router.put('/update-year/:id', yearController.updateYear);
 router.delete('/delete-year/:id', yearController.deleteYear);
