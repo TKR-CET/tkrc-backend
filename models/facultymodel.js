@@ -4,7 +4,7 @@ const timetableSchema = new mongoose.Schema({
   monday: {
     type: [String],
     default: [],
-    
+      
   },
   tuesday: {
     type: [String],
