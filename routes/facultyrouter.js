@@ -6,7 +6,7 @@ const {
   updateFaculty,
   deleteFaculty,
 } = require("../controllers/facultycontroller"); // Path to the controller
-
+  
 const router = express.Router();
 
 router.post("/addfaculty", addFaculty); // Add new faculty
