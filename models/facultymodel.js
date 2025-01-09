@@ -32,29 +32,28 @@ const timetableSchema = new mongoose.Schema({
 const facultySchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name is required"], // Custom error message for missing name
+  
     trim: true,
   },
   facultyId: {
     type: String,
-    required: [true, "Faculty ID is required"],
     unique: true,
-    trim: true,
+    trim: true
   },
   image: {
     type: String,
     default: "",
-    trim: true,
+    trim: true
   },
   role: {
     type: String,
-    required: [true, "Role is required"],
-    trim: true,
+
+    trim: true
   },
   department: {
     type: String,
-    required: [true, "Department is required"],
-    trim: true,
+
+    trim: true
   },
   timetable: {
     type: timetableSchema,
