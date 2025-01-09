@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const facultyroutes =require("./routes/facultyrouter");
+const subjectsroutes=require("./routes/subjectsrouter");
 
 const app = express();
 const PORT = process.env.PORT || 5000; // Use environment variable for PORT or default to 5000
@@ -27,6 +28,7 @@ mongoose
 // Routes
 app.use("/attendance", attendanceRoutes);
 app.use("/faculty", facultyroutes);
+app.use('/subjects', subjectsroutes);
 
 // Default route
 app.get("/", (req, res) => {
