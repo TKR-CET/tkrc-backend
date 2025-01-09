@@ -5,7 +5,7 @@ const attendanceController = require('../controllers/studentscontroller');
 // Routes for Year
 router.get('/get-allyears', attendanceController.getAllYears);
 router.get('/get-years/:id', attendanceController.getYearById);
-router.post('/add-years', attendanceController.addYear);
+router.post('/add-year', attendanceController.addYear);
 
 // Routes for Department
 router.post('/add-department/:yearId/departments', attendanceController.addDepartmentToYear);
