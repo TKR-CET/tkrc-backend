@@ -1,7 +1,7 @@
 const Year = require("../models/studentSection");
 
 // Get students in a section
-const getStudentsBySection = async (req, res) => {
+const getStudentsBySection = async (req, res) => { 
   try {
     const { yearId, departmentId, sectionId } = req.params;
 
