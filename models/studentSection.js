@@ -1,5 +1,5 @@
 
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); 
 
 const StudentSchema = new mongoose.Schema({
   rollNumber: { type: String, required: true }, // e.g., "101"
