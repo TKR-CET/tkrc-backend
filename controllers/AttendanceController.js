@@ -1,12 +1,12 @@
-const Attendance = require("../models/studentAttendance");
- 
+const Attendance = require("../models/Attendance");
+
 // Mark Attendance
 const markAttendance = async (req, res) => {
   try {
-    const { date, year, department, section, periods, subject, topic, remarks, attendance } = req.body;
+    const { date, periods, subject, topic, remarks, year, department, section, attendance } = req.body;
 
     // Validate required fields
-    if (!date || !year || !department || !section || !periods || !subject || !attendance) {
+    if (!date || !periods || !subject || !topic || !year || !department || !section || !attendance) {
       return res.status(400).json({ message: "All mandatory fields are required" });
     }
 
@@ -30,18 +30,12 @@ const markAttendance = async (req, res) => {
       return { rollNumber, name, status: status.toLowerCase() };
     });
 
-    // Check if attendance exists for the date, section, and periods
-    const existingAttendance = await Attendance.findOne({
-      date,
-      year,
-      department,
-      section,
-      periods,
-      subject,
-    });
+    // Find existing attendance for the given date, periods, and section
+    const existingAttendance = await Attendance.findOne({ date, periods, year, department, section });
 
     if (existingAttendance) {
       // Update existing attendance
+      existingAttendance.subject = subject;
       existingAttendance.topic = topic;
       existingAttendance.remarks = remarks;
       existingAttendance.attendance = formattedAttendance;
@@ -53,16 +47,16 @@ const markAttendance = async (req, res) => {
         data: existingAttendance,
       });
     } else {
-      // Create a new attendance record
+      // Save new attendance record
       const newAttendance = new Attendance({
         date,
-        year,
-        department,
-        section,
         periods,
         subject,
         topic,
         remarks,
+        year,
+        department,
+        section,
         attendance: formattedAttendance,
       });
 
@@ -85,23 +79,16 @@ const markAttendance = async (req, res) => {
 // Fetch Attendance Records
 const fetchAttendance = async (req, res) => {
   try {
-    const { date, year, department, section, subject } = req.query;
+    const { date, year, department, section } = req.query;
 
-    // Validate required parameters
-    if (!date || !year || !department || !section || !subject) {
-      return res.status(400).json({ message: "All required query parameters must be provided" });
+    if (!date || !year || !department || !section) {
+      return res.status(400).json({ message: "Date, year, department, and section are required" });
     }
 
-    const attendanceRecords = await Attendance.find({
-      date,
-      year,
-      department,
-      section,
-      subject,
-    });
+    const attendanceRecords = await Attendance.find({ date, year, department, section });
 
     if (!attendanceRecords.length) {
-      return res.status(404).json({ message: "No attendance records found for the specified criteria" });
+      return res.status(404).json({ message: "No attendance records found for the given filters" });
     }
 
     res.status(200).json({
@@ -120,29 +107,22 @@ const fetchAttendance = async (req, res) => {
 // Check Existing Attendance
 const checkAttendance = async (req, res) => {
   try {
-    const { date, year, department, section, subject } = req.query;
+    const { date, year, department, section } = req.query;
 
-    // Validate required parameters
-    if (!date || !year || !department || !section || !subject) {
-      return res.status(400).json({ message: "All required query parameters must be provided" });
+    if (!date || !year || !department || !section) {
+      return res.status(400).json({ message: "Date, year, department, and section are required" });
     }
 
-    const attendanceRecords = await Attendance.findOne({
-      date,
-      year,
-      department,
-      section,
-      subject,
+    // Fetch attendance records for the specific date, year, department, and section
+    const attendanceRecords = await Attendance.find({ date, year, department, section });
+
+    // Extract periods that already have attendance marked
+    const markedPeriods = attendanceRecords.flatMap((record) => record.periods);
+
+    res.status(200).json({
+      message: "Checked existing attendance records successfully",
+      periods: [...new Set(markedPeriods)], // Return unique periods
     });
-
-    if (attendanceRecords) {
-      return res.status(200).json({
-        message: "Attendance already exists",
-        data: attendanceRecords,
-      });
-    } else {
-      res.status(404).json({ message: "No attendance record found for the specified criteria" });
-    }
   } catch (error) {
     console.error("Error checking attendance:", error.message || error);
     res.status(500).json({
@@ -152,33 +132,8 @@ const checkAttendance = async (req, res) => {
   }
 };
 
-// Delete Attendance Record
-const deleteAttendance = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const deletedRecord = await Attendance.findByIdAndDelete(id);
-
-    if (!deletedRecord) {
-      return res.status(404).json({ message: "Attendance record not found" });
-    }
-
-    res.status(200).json({
-      message: "Attendance record deleted successfully",
-      data: deletedRecord,
-    });
-  } catch (error) {
-    console.error("Error deleting attendance:", error.message || error);
-    res.status(500).json({
-      message: "An error occurred while deleting attendance",
-      error: error.message || error,
-    });
-  }
-};
-
 module.exports = {
   markAttendance,
   fetchAttendance,
   checkAttendance,
-  deleteAttendance,
 };
