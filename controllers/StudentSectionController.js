@@ -20,7 +20,7 @@ const getStudentsBySection = async (req, res) => {
   }
 };
 
-// Add a student to a section
+// Add multiple students to a section
 const addStudentsToSection = async (req, res) => {
   try {
     const { yearId, departmentId, sectionId } = req.params;
@@ -39,7 +39,6 @@ const addStudentsToSection = async (req, res) => {
     const section = department.sections.id(sectionId);
     if (!section) return res.status(404).json({ message: "Section not found" });
 
-    // Validate each student object
     students.forEach((student) => {
       if (!student.rollNumber || !student.name) {
         throw new Error("Each student must have a rollNumber and name.");
@@ -55,38 +54,12 @@ const addStudentsToSection = async (req, res) => {
   }
 };
 
-
-// Update a section's timetable
-const updateSectionTimetable = async (req, res) => {
+// Add or update a timetable for a section
+const upsertSectionTimetable = async (req, res) => {
   try {
     const { yearId, departmentId, sectionId } = req.params;
     const { timetable } = req.body;
 
-    const year = await Year.findById(yearId);
-    if (!year) return res.status(404).json({ message: "Year not found" });
-
-    const department = year.departments.id(departmentId);
-    if (!department) return res.status(404).json({ message: "Department not found" });
-
-    const section = department.sections.id(sectionId);
-    if (!section) return res.status(404).json({ message: "Section not found" });
-
-    section.timetable = timetable;
-    await year.save();
-
-    res.status(200).json({ message: "Section timetable updated successfully", section });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating timetable", error });
-  }
-};
-
-// Add a new timetable to a section
-const addTimetableToSection = async (req, res) => {
-  try {
-    const { yearId, departmentId, sectionId } = req.params;
-    const { timetable } = req.body;
-
-    // Validate the input
     if (!timetable || !Array.isArray(timetable)) {
       return res.status(400).json({ message: "Timetable must be an array" });
     }
@@ -100,17 +73,15 @@ const addTimetableToSection = async (req, res) => {
     const section = department.sections.id(sectionId);
     if (!section) return res.status(404).json({ message: "Section not found" });
 
-    // Add or overwrite the timetable
     section.timetable = timetable;
-
     await year.save();
-    res.status(200).json({ message: "Timetable added successfully", section });
+
+    res.status(200).json({ message: "Timetable added/updated successfully", section });
   } catch (error) {
-    console.error("Error adding timetable:", error.message || error);
-    res.status(500).json({ message: "Error adding timetable", error });
+    console.error("Error upserting timetable:", error.message || error);
+    res.status(500).json({ message: "Error upserting timetable", error });
   }
 };
-
 
 // Add a new year
 const addYear = async (req, res) => {
@@ -167,9 +138,8 @@ const addSectionToDepartment = async (req, res) => {
 
 module.exports = {
   getStudentsBySection,
-  addStudentToSection,
-  updateSectionTimetable,
-  addTimetableToSection,
+  addStudentsToSection,
+  upsertSectionTimetable,
   addYear,
   addDepartmentToYear,
   addSectionToDepartment,
