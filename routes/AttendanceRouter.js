@@ -3,14 +3,29 @@ const {
   markAttendance,
   fetchAttendance,
   checkAttendance,
-  deleteAttendance,
-} = require("../controllers/AttendanceController"); 
+} = require("../controllers/AttendanceController");
 
 const router = express.Router();
 
-router.post("/Mark-attendance", markAttendance); // Mark or update attendance
-router.get("/Fetch-attendance", fetchAttendance); // Fetch attendance records
-router.get("/check", checkAttendance); // Check if attendance exists
-router.delete("/:id", deleteAttendance); // Delete an attendance record
+/**
+ * @route   POST /Attendance/mark-attendance
+ * @desc    Mark attendance for a specific date, year, department, and section
+ * @access  Public
+ */
+router.post("/mark-attendance", markAttendance);
+
+/**
+ * @route   GET /Attendance/fetch-attendance
+ * @desc    Fetch attendance records for a specific date, year, department, and section
+ * @access  Public
+ */
+router.get("/fetch-attendance", fetchAttendance);
+
+/**
+ * @route   GET /Attendance/check-attendance
+ * @desc    Check if attendance is already marked for a specific date, year, department, and section
+ * @access  Public
+ */
+router.get("/check", checkAttendance);
 
 module.exports = router;
