@@ -23,7 +23,7 @@ router.post("/:yearId/:departmentId/:sectionId/students", addStudentToSection);
 router.put("/:yearId/:departmentId/:sectionId/timetable", updateSectionTimetable);
 
 // Add a new timetable entry to a section
-router.post("/:yearId/:departmentId/:sectionId/timetable", addTimetableToSection);
+router.post("/:yearId/:departmentId/:sectionId/update-timetable", addTimetableToSection);
 
 // Add a new year
 router.post("/year", addYear);
