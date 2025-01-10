@@ -1,45 +1,24 @@
 
-
 const mongoose = require("mongoose");
-
-const attendanceSchema = new mongoose.Schema({
-  date: {
-    type: String,
-    required: true,
-  },
-  periods: {
-    type: [Number], // Array of selected periods
-    required: true,
-  },
-  subject: {
-    type: String,
-    required: true,
-  },
-  topic: {
-    type: String,
-    required: true,
-  },
-  remarks: {
-    type: String,
-    
-  },
+ 
+const AttendanceSchema = new mongoose.Schema({
+  date: { type: String, required: true }, // e.g., "2025-01-09"
+  subject: { type: String, required: true }, // e.g., "Maths"
+  year: { type: String, required: true }, // e.g., "4th Year"
+  department: { type: String, required: true }, // e.g., "CSE"
+  section: { type: String, required: true }, // e.g., "A"
   attendance: [
     {
-      rollNumber: {
-        type: String,
-        required: true,
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-      status: {
-        type: String,
-        enum: ["present", "absent"], // Only "present" or "absent" allowed
-        required: true,
-      },
+      rollNumber: { type: String, required: true },
+      name: { type: String, required: true },
+      status: { type: String, enum: ["Present", "Absent"], required: true },
     },
   ],
 });
 
-module.exports = mongoose.model("Attendance", attendanceSchema);
+const Attendance = mongoose.model("studentAttendance", AttendanceSchema);
+module.exports = Attendance;
+
+
+
+
