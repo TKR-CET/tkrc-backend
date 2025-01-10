@@ -21,10 +21,14 @@ const getStudentsBySection = async (req, res) => {
 };
 
 // Add a student to a section
-const addStudentToSection = async (req, res) => {
+const addStudentsToSection = async (req, res) => {
   try {
     const { yearId, departmentId, sectionId } = req.params;
-    const { rollNumber, name } = req.body;
+    const { students } = req.body;
+
+    if (!students || !Array.isArray(students)) {
+      return res.status(400).json({ message: "Students must be an array" });
+    }
 
     const year = await Year.findById(yearId);
     if (!year) return res.status(404).json({ message: "Year not found" });
@@ -35,14 +39,22 @@ const addStudentToSection = async (req, res) => {
     const section = department.sections.id(sectionId);
     if (!section) return res.status(404).json({ message: "Section not found" });
 
-    section.students.push({ rollNumber, name });
-    await year.save();
+    // Validate each student object
+    students.forEach((student) => {
+      if (!student.rollNumber || !student.name) {
+        throw new Error("Each student must have a rollNumber and name.");
+      }
+      section.students.push(student);
+    });
 
-    res.status(201).json({ message: "Student added successfully", section });
+    await year.save();
+    res.status(201).json({ message: "Students added successfully", section });
   } catch (error) {
-    res.status(500).json({ message: "Error adding student", error });
+    console.error("Error adding students:", error.message || error);
+    res.status(500).json({ message: "Error adding students", error });
   }
 };
+
 
 // Update a section's timetable
 const updateSectionTimetable = async (req, res) => {
