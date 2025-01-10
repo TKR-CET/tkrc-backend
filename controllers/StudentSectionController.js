@@ -68,6 +68,30 @@ const updateSectionTimetable = async (req, res) => {
   }
 };
 
+// Add a new timetable to a section
+const addTimetableToSection = async (req, res) => {
+  try {
+    const { yearId, departmentId, sectionId } = req.params;
+    const { day, periods } = req.body;
+
+    const year = await Year.findById(yearId);
+    if (!year) return res.status(404).json({ message: "Year not found" });
+
+    const department = year.departments.id(departmentId);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+
+    const section = department.sections.id(sectionId);
+    if (!section) return res.status(404).json({ message: "Section not found" });
+
+    section.timetable.push({ day, periods });
+    await year.save();
+
+    res.status(201).json({ message: "Timetable added successfully", section });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding timetable", error });
+  }
+};
+
 // Add a new year
 const addYear = async (req, res) => {
   try {
@@ -125,6 +149,7 @@ module.exports = {
   getStudentsBySection,
   addStudentToSection,
   updateSectionTimetable,
+  addTimetableToSection,
   addYear,
   addDepartmentToYear,
   addSectionToDepartment,
