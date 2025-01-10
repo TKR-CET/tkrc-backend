@@ -7,7 +7,7 @@ const {
   deleteFaculty,
   getFacultyTimetable,
   updateFacultyTimetable,
-} = require("../controllers/facultyController");
+} = require("../controllers/FacultyController");
 
 const router = express.Router();
 
