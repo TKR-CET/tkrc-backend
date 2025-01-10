@@ -8,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.post("/", markAttendance); // Mark or update attendance
-router.get("/", fetchAttendance); // Fetch attendance records
+router.post("/Mark-attendance", markAttendance); // Mark or update attendance
+router.get("/Fetch-attendance", fetchAttendance); // Fetch attendance records
 router.get("/check", checkAttendance); // Check if attendance exists
 router.delete("/:id", deleteAttendance); // Delete an attendance record
 
