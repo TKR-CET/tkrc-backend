@@ -3,6 +3,7 @@ const {
   getStudentsBySection,
   addStudentToSection,
   updateSectionTimetable,
+  addTimetableToSection,
   addYear,
   addDepartmentToYear,
   addSectionToDepartment,
@@ -10,20 +11,27 @@ const {
 
 const router = express.Router();
 
-// Year Management
-router.post("/addyear", addYear); // Add a new year
+// Routes for managing sections, students, and timetable
 
-// Department Management
-router.post("/:yearId/department", addDepartmentToYear); // Add a department to a year
+// Get all students in a section
+router.get("/:yearId/:departmentId/:sectionId/students", getStudentsBySection);
 
-// Section Management
-router.post("/:yearId/:departmentId/section", addSectionToDepartment); // Add a section to a department
+// Add a new student to a section
+router.post("/:yearId/:departmentId/:sectionId/students", addStudentToSection);
 
-// Students Management
-router.get("/:yearId/:departmentId/:sectionId/students", getStudentsBySection); // Get students in a section
-router.post("/:yearId/:departmentId/:sectionId/students", addStudentToSection); // Add a student to a section
+// Update timetable for a section
+router.put("/:yearId/:departmentId/:sectionId/timetable", updateSectionTimetable);
 
-// Section Timetable Management
-router.put("/:yearId/:departmentId/:sectionId/timetable", updateSectionTimetable); // Update section timetable
+// Add a new timetable entry to a section
+router.post("/:yearId/:departmentId/:sectionId/timetable", addTimetableToSection);
+
+// Add a new year
+router.post("/year", addYear);
+
+// Add a new department to a year
+router.post("/:yearId/department", addDepartmentToYear);
+
+// Add a new section to a department
+router.post("/:yearId/:departmentId/section", addSectionToDepartment);
 
 module.exports = router;
