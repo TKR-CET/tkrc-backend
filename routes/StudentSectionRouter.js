@@ -1,7 +1,7 @@
 const express = require("express");
 const {
   getStudentsBySection,
-  addStudentToSection,
+  addStudentToSection, 
   updateSectionTimetable,
 } = require("../controllers/StudentSectionController");
 
