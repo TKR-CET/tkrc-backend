@@ -3,7 +3,7 @@ const Year = require("../models/studentSection");
 // Get students in a section 
 const getStudentsBySection = async (req, res) => {
   try {
-    const { yearId, departmentId, sectionId } = req.params;
+    const { yearId, departmentId, sectionId } = req.params; 
 
     const year = await Year.findById(yearId);
     if (!year) return res.status(404).json({ message: "Year not found" });
