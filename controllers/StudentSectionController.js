@@ -1,4 +1,4 @@
-const Year = require("../models/Year");
+const Year = require("../models/studentSection");
 
 // Get students in a section
 const getStudentsBySection = async (req, res) => {
