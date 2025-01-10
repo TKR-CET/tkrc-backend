@@ -3,7 +3,7 @@ const {
   getStudentsBySection,
   addStudentToSection,
   updateSectionTimetable,
-} = require("../controllers/yearController");
+} = require("../controllers/StudentSectionController");
 
 const router = express.Router();
 
