@@ -6,7 +6,7 @@ const {
   addYear,
   addDepartmentToYear,
   addSectionToDepartment,
-} = require("../controllers/studentSectionController");
+} = require("../controllers/StudentSectionController");
 
 const router = express.Router();
 
