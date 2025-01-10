@@ -7,6 +7,12 @@ const subjectsroutes=require("./routes/subjectsrouter");
 const studentrouter=require("./routes/studentsrouter");
 
 
+const Facultyroute=require("./routes/FacultyRouter");
+const AttendanceRoute=require("./routes/AttendanceRouter");
+const SectionRoute=require("./routes/StudentSectionRouter");
+
+
+
 const app = express();
 const PORT = process.env.PORT || 5000; // Use environment variable for PORT or default to 5000
 
@@ -32,6 +38,12 @@ app.use("/attendance", attendanceRoutes);
 app.use("/faculty", facultyroutes);
 app.use('/subjects', subjectsroutes);
 app.use('/students',studentrouter);
+
+
+app.use("/Faculty", Facultyroute);
+app.use('/Attendance', AttendanceRoute);
+app.use('/Section',SectionRoute);
+
 
 // Default route
 app.get("/", (req, res) => {
