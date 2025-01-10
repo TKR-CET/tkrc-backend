@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 // Year Management
-router.post("/", addYear); // Add a new year
+router.post("/addyear", addYear); // Add a new year
 
 // Department Management
 router.post("/:yearId/department", addDepartmentToYear); // Add a department to a year
