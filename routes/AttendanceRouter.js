@@ -4,7 +4,7 @@ const {
   fetchAttendance,
   checkAttendance,
   deleteAttendance,
-} = require("../controllers/attendanceController");
+} = require("../controllers/AttendanceController");
 
 const router = express.Router();
 
