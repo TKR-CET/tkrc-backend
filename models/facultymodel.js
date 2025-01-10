@@ -1,70 +1,25 @@
 const mongoose = require("mongoose");
 
-// Timetable Schema
-const timetableSchema = new mongoose.Schema({
-  monday: {
-    type: [String],
-    default: [], 
-  },
-  tuesday: {
-    type: [String],
-    default: [],
-  },
-  wednesday: {
-    type: [String],
-    default: [],
-  },
-  thursday: {
-    type: [String],
-    default: [],
-  },
-  friday: {
-    type: [String],
-    default: [],
-  },
-  saturday: {
-    type: [String],
-    default: [],
-  },
+const TimetableSchema = new mongoose.Schema({
+  day: { type: String, required: true }, // e.g., Monday
+  periods: [
+    {
+      periodNumber: { type: Number, required: true },
+      subject: { type: String, required: true },
+      year: { type: String, required: true },
+      department: { type: String, required: true },
+      section: { type: String, required: true },
+    },
+  ],
 });
 
-// Faculty Schema
-const facultySchema = new mongoose.Schema({
-  name: {
-    type: String,
-  required:true
-
-  },
-  facultyId: {
-    type: String,
-    unique: true,
-     required:true
-    
-  },
-  image: {
-    type: String,
-    default: "",
-     required:true
-
-  },
-  role: {
-    type: String,
-     required:true
-
-  },
-  department: {
-    type: String,
-     required:true
-
-    
-  },
-  timetable: {
-    type: timetableSchema,
-    default: () => ({}), // Ensure timetable always exists as an object
-  },
+const FacultySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  facultyId: { type: String, unique: true, required: true },
+  role: { type: String, required: true }, // e.g., Professor
+  department: { type: String, required: true },
+  timetable: [TimetableSchema], // Array of timetables for different days
 });
 
-// Faculty Model
-const Faculty = mongoose.model("Faculty", facultySchema);
-
+const Faculty = mongoose.model("Facultydata", FacultySchema);
 module.exports = Faculty;
