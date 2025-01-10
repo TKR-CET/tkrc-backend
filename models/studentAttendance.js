@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+ 
 const AttendanceSchema = new mongoose.Schema({
   date: { type: String, required: true }, // e.g., "2025-01-09"
   subject: { type: String, required: true }, // e.g., "Maths"
