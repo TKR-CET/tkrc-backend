@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  addFaculty,
+  addFaculty, 
   getAllFaculty,
   getFacultyById,
   updateFaculty,
