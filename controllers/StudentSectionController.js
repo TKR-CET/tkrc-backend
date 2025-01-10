@@ -72,7 +72,12 @@ const updateSectionTimetable = async (req, res) => {
 const addTimetableToSection = async (req, res) => {
   try {
     const { yearId, departmentId, sectionId } = req.params;
-    const { day, periods } = req.body;
+    const { timetable } = req.body;
+
+    // Validate the input
+    if (!timetable || !Array.isArray(timetable)) {
+      return res.status(400).json({ message: "Timetable must be an array" });
+    }
 
     const year = await Year.findById(yearId);
     if (!year) return res.status(404).json({ message: "Year not found" });
@@ -83,14 +88,17 @@ const addTimetableToSection = async (req, res) => {
     const section = department.sections.id(sectionId);
     if (!section) return res.status(404).json({ message: "Section not found" });
 
-    section.timetable.push({ day, periods });
-    await year.save();
+    // Add or overwrite the timetable
+    section.timetable = timetable;
 
-    res.status(201).json({ message: "Timetable added successfully", section });
+    await year.save();
+    res.status(200).json({ message: "Timetable added successfully", section });
   } catch (error) {
+    console.error("Error adding timetable:", error.message || error);
     res.status(500).json({ message: "Error adding timetable", error });
   }
 };
+
 
 // Add a new year
 const addYear = async (req, res) => {
