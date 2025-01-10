@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); 
 
 const TimetableSchema = new mongoose.Schema({
   day: { type: String, required: true }, // e.g., Monday
