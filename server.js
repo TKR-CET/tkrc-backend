@@ -33,7 +33,7 @@ mongoose
 
 
 // Routes
-app.use("/attendance", attendanceRoutes);
+
 app.use("/faculty", facultyroutes);
 app.use('/subjects', subjectsroutes);
 app.use('/students',studentrouter);
