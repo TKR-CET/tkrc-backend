@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const facultyroutes =require("./routes/facultyrouter");
+const facultyroutes =require("./routes/FacultyRouter");
 const subjectsroutes=require("./routes/subjectsrouter");
 const studentrouter=require("./routes/studentsrouter");
 
