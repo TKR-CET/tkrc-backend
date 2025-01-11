@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 
-router.post("/addfaculty", addFaculty); // Add new faculty
+router.post("/addfaculty", upload.single("image"), addFaculty);// Add new faculty
 router.get("/getfaculty", getAllFaculty); // Get all faculty
 router.get("/:id", getFacultyById); // Get a faculty by ID
 router.put("/:id", updateFaculty); // Update faculty
