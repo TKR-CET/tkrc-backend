@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const facultyroutes =require("./routes/FacultyRouter");
@@ -16,6 +17,23 @@ const PORT = process.env.PORT || 5000; // Use environment variable for PORT or d
 
 // Middleware
 app.use(express.json());
+
+// Set up the storage engine for Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads"); // Set the destination folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Set the file name
+  },
+});
+
+// Create the upload middleware using the diskStorage configuration
+const upload = multer({ storage: storage });
+
+// Serve static files from the 'uploads' directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 const corsOptions = {
   origin: ["https://tkrcet.vercel.app", "http://localhost:5173"], // Define an array of allowed origins
