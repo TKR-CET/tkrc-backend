@@ -124,7 +124,7 @@ const deleteFaculty = async (req, res) => {
 const getFacultyTimetable = async (req, res) => {
     try {
         const { id } = req.params; // id here is actually the facultyId
-        const faculty = await Faculty.findOne({ facultyId: id }); // Query by facultyId instead of _id
+        const faculty = await Faculty.findOne({ facultyId: _id }); // Query by facultyId instead of _id
 
         if (!faculty) {
             return res.status(404).json({ message: "Faculty not found" });
