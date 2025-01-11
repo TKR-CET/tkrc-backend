@@ -1,6 +1,6 @@
 const Faculty = require("../models/facultymodel");
 const bcrypt = require("bcryptjs");
- 
+ const multer = require("multer");
 // Login faculty
 const loginFaculty = async (req, res) => {
     try {
@@ -43,17 +43,32 @@ const loginFaculty = async (req, res) => {
     }
 };
 
+// Set up storage for multer to save images locally
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Save images to 'uploads' directory
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Name format: image-<uniqueSuffix>.jpg
+  }
+});
+
+const upload = multer({ storage: storage });
+
 // Add a new faculty
 const addFaculty = async (req, res) => {
   try {
     const { name, facultyId, role, department, password, timetable } = req.body;
+    const image = req.file ? `uploads/${req.file.filename}` : null; // Save image path (relative URL)
 
     const newFaculty = new Faculty({
       name,
       facultyId,
       role,
       department,
-      password, // Include password here
+      password,
+      image, // Save the image URL here
       timetable,
     });
 
@@ -64,17 +79,7 @@ const addFaculty = async (req, res) => {
   }
 };
 
-// Get all faculty
-const getAllFaculty = async (req, res) => {
-  try {
-    const facultyList = await Faculty.find();
-    res.status(200).json(facultyList);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching faculty", error });
-  }
-};
-
-// Get faculty by ID
+// Get a faculty by ID (including image)
 const getFacultyById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -87,6 +92,16 @@ const getFacultyById = async (req, res) => {
     res.status(500).json({ message: "Error fetching faculty", error });
   }
 };
+// Get all faculty
+const getAllFaculty = async (req, res) => {
+  try {
+    const facultyList = await Faculty.find();
+    res.status(200).json(facultyList);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching faculty", error });
+  }
+};
+
 
 // Update a faculty
 const updateFaculty = async (req, res) => {
