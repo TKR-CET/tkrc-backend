@@ -1,7 +1,5 @@
-// models/facultymodel.js 
-const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const path = require("path");
+const mongoose = require("mongoose");
 
 const TimetableSchema = new mongoose.Schema({
   day: { type: String, required: true }, // e.g., Monday
@@ -19,11 +17,11 @@ const TimetableSchema = new mongoose.Schema({
 const FacultySchema = new mongoose.Schema({
   name: { type: String, required: true },
   facultyId: { type: String, unique: true, required: true },
-  role: { type: String, required: true },
+  role: { type: String, required: true }, // e.g., Professor
   department: { type: String, required: true },
   password: { type: String, required: true }, // Add password field
-  image: { type: String }, // Store the image URL here (relative path)
   timetable: [TimetableSchema], // Array of timetables for different days
+  image: { type: String }, // Field to store the image path
 });
 
 // Hash the password before saving the faculty document
