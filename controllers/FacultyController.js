@@ -120,12 +120,15 @@ const deleteFaculty = async (req, res) => {
 };
 
 // Get faculty timetable
+
 const getFacultyTimetable = async (req, res) => {
     try {
-        const { id } = req.params;
-        const faculty = await Faculty.findById(id);
+        const { id } = req.params; // id here is actually the facultyId
+        const faculty = await Faculty.findOne({ facultyId: id }); // Query by facultyId instead of _id
 
-        if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+        if (!faculty) {
+            return res.status(404).json({ message: "Faculty not found" });
+        }
 
         res.status(200).json({
             timetable: faculty.timetable,
@@ -136,9 +139,15 @@ const getFacultyTimetable = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(500).json({ message: "Error fetching timetable", error });
+        res.status(500).json({ 
+            message: "Error fetching timetable", 
+            error: error.message 
+        });
     }
 };
+
+
+
 
 // Update faculty timetable
 const updateFacultyTimetable = async (req, res) => {
