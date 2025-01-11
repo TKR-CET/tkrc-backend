@@ -1,11 +1,10 @@
 const express = require("express");
-const multer = require("multer");
-
-const {   
+const { 
   addFaculty, 
+  updateFaculty,
+  upload, // Import upload from FacultyController.js
   getAllFaculty,
   getFacultyById,
-  updateFaculty,
   deleteFaculty,
   getFacultyTimetable,
   updateFacultyTimetable,
@@ -13,6 +12,7 @@ const {
 } = require("../controllers/FacultyController");
 
 const router = express.Router();
+
 // Add faculty with image upload
 router.post("/addfaculty", upload.single("image"), addFaculty);
 
@@ -25,4 +25,5 @@ router.delete("/:id", deleteFaculty); // Delete faculty
 router.get("/:id/timetable", getFacultyTimetable); // Get faculty timetable
 router.put("/update/:id/timetable", updateFacultyTimetable); // Update faculty timetable
 router.post("/login", loginFaculty);
+
 module.exports = router;
