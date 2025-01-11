@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path=require("path");
 const facultyroutes =require("./routes/FacultyRouter");
 const subjectsroutes=require("./routes/subjectsrouter");
 const studentrouter=require("./routes/studentsrouter");
