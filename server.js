@@ -6,7 +6,6 @@ const subjectsroutes=require("./routes/subjectsrouter");
 const studentrouter=require("./routes/studentsrouter");
 
 
-const Facultyroute=require("./routes/FacultyRouter");
 const AttendanceRoute=require("./routes/AttendanceRouter");
 const SectionRoute=require("./routes/StudentSectionRouter");
 
@@ -39,7 +38,7 @@ app.use('/subjects', subjectsroutes);
 app.use('/students',studentrouter);
 
 
-app.use("/Faculty", Facultyroute);
+
 app.use('/Attendance', AttendanceRoute);
 app.use('/Section',SectionRoute);
 
