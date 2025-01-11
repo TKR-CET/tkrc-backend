@@ -123,8 +123,8 @@ const deleteFaculty = async (req, res) => {
 
 const getFacultyTimetable = async (req, res) => {
     try {
-        const { id } = req.params; // id here is actually the facultyId
-        const faculty = await Faculty.findOne({ facultyId: id }); // Query by facultyId instead of _id
+        const { id } = req.params; // 'id' is the MongoDB _id
+        const faculty = await Faculty.findById(id); // Query by _id
 
         if (!faculty) {
             return res.status(404).json({ message: "Faculty not found" });
@@ -139,13 +139,12 @@ const getFacultyTimetable = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(500).json({ 
-            message: "Error fetching timetable", 
-            error: error.message 
+        res.status(500).json({
+            message: "Error fetching timetable",
+            error: error.message
         });
     }
 };
-
 
 
 
