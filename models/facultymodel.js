@@ -1,4 +1,4 @@
-// models/facultymodel.js
+// models/facultymodel.js 
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const path = require("path");
