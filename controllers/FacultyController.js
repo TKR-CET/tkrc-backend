@@ -43,33 +43,21 @@ const loginFaculty = async (req, res) => {
     }
 };
 
-// Set up storage for multer to save images locally
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Save images to 'uploads' directory
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Name format: image-<uniqueSuffix>.jpg
-  }
-});
 
-const upload = multer({ storage: storage });
 
-// Add a new faculty
 const addFaculty = async (req, res) => {
   try {
     const { name, facultyId, role, department, password, timetable } = req.body;
-    const image = req.file ? `uploads/${req.file.filename}` : null; // Save image path (relative URL)
+    const image = req.file ? req.file.path : null; // Save the image path (relative to the 'uploads' folder)
 
     const newFaculty = new Faculty({
       name,
       facultyId,
       role,
       department,
-      password,
-      image, // Save the image URL here
+      password, 
       timetable,
+      image, // Save image URL or path
     });
 
     await newFaculty.save();
