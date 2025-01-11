@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
-
+ 
 // Set up multer storage configuration for faculty images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
