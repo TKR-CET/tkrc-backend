@@ -1,5 +1,27 @@
 const Faculty = require("../models/facultymodel");
- 
+
+
+// Login faculty
+const loginFaculty = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const faculty = await Faculty.findOne({ facultyId: username });
+
+        if (!faculty || faculty.password !== password) {
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        res.status(200).json({ success: true, facultyId: faculty._id });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error during login", error });
+    }
+};
+
+
+
+
+
 // Add a new faculty
 const addFaculty = async (req, res) => {
   try {
@@ -77,16 +99,23 @@ const deleteFaculty = async (req, res) => {
 
 // Get faculty timetable
 const getFacultyTimetable = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const faculty = await Faculty.findById(id);
+    try {
+        const { id } = req.params;
+        const faculty = await Faculty.findById(id);
 
-    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+        if (!faculty) return res.status(404).json({ message: "Faculty not found" });
 
-    res.status(200).json({ timetable: faculty.timetable });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching timetable", error });
-  }
+        res.status(200).json({
+            timetable: faculty.timetable,
+            facultyDetails: {
+                name: faculty.name,
+                department: faculty.department,
+                role: faculty.role,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching timetable", error });
+    }
 };
 
 // Update faculty timetable
@@ -116,4 +145,5 @@ module.exports = {
   deleteFaculty,
   getFacultyTimetable,
   updateFacultyTimetable,
+ loginFaculty,
 };
