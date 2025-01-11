@@ -6,21 +6,40 @@ const loginFaculty = async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        // Find the faculty by their ID
         const faculty = await Faculty.findOne({ facultyId: username });
 
         if (!faculty) {
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
+            return res.status(401).json({ 
+                success: false, 
+                message: "Invalid credentials: Faculty not found" 
+            });
         }
 
         // Compare hashed password
         const isMatch = await bcrypt.compare(password, faculty.password);
         if (!isMatch) {
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
+            return res.status(401).json({ 
+                success: false, 
+                message: "Invalid credentials: Incorrect password" 
+            });
         }
 
-        res.status(200).json({ success: true, facultyId: faculty._id });
+        // Successful login
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            facultyId: faculty._id,
+            name: faculty.name,
+            role: faculty.role,
+            department: faculty.department,
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error during login", error });
+        res.status(500).json({ 
+            success: false, 
+            message: "Error during login", 
+            error: error.message 
+        });
     }
 };
 
