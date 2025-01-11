@@ -1,6 +1,6 @@
 const Faculty = require("../models/facultymodel");
 const bcrypt = require("bcryptjs");
- const path = require("path");
+const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 
@@ -70,51 +70,48 @@ const updateFaculty = async (req, res) => {
     res.status(500).json({ message: "Error updating faculty", error });
   }
 };
- 
+
 // Login faculty
 const loginFaculty = async (req, res) => {
-    try {
-        const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-        // Find the faculty by their ID
-        const faculty = await Faculty.findOne({ facultyId: username });
+    // Find the faculty by their ID
+    const faculty = await Faculty.findOne({ facultyId: username });
 
-        if (!faculty) {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Invalid credentials: Faculty not found" 
-            });
-        }
-
-        // Compare hashed password
-        const isMatch = await bcrypt.compare(password, faculty.password);
-        if (!isMatch) {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Invalid credentials: Incorrect password" 
-            });
-        }
-
-        // Successful login
-        res.status(200).json({
-            success: true,
-            message: "Login successful",
-            facultyId: faculty._id,
-            name: faculty.name,
-            role: faculty.role,
-            department: faculty.department,
-        });
-    } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            message: "Error during login", 
-            error: error.message 
-        });
+    if (!faculty) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid credentials: Faculty not found" 
+      });
     }
+
+    // Compare hashed password
+    const isMatch = await bcrypt.compare(password, faculty.password);
+    if (!isMatch) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid credentials: Incorrect password" 
+      });
+    }
+
+    // Successful login
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      facultyId: faculty._id,
+      name: faculty.name,
+      role: faculty.role,
+      department: faculty.department,
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: "Error during login", 
+      error: error.message 
+    });
+  }
 };
-
-
-
 
 // Get a faculty by ID (including image)
 const getFacultyById = async (req, res) => {
@@ -129,6 +126,7 @@ const getFacultyById = async (req, res) => {
     res.status(500).json({ message: "Error fetching faculty", error });
   }
 };
+
 // Get all faculty
 const getAllFaculty = async (req, res) => {
   try {
@@ -138,8 +136,6 @@ const getAllFaculty = async (req, res) => {
     res.status(500).json({ message: "Error fetching faculty", error });
   }
 };
-
-
 
 // Delete a faculty
 const deleteFaculty = async (req, res) => {
@@ -157,33 +153,30 @@ const deleteFaculty = async (req, res) => {
 };
 
 // Get faculty timetable
-
 const getFacultyTimetable = async (req, res) => {
-    try {
-        const { id } = req.params; // 'id' is the MongoDB _id
-        const faculty = await Faculty.findById(id); // Query by _id
+  try {
+    const { id } = req.params; // 'id' is the MongoDB _id
+    const faculty = await Faculty.findById(id); // Query by _id
 
-        if (!faculty) {
-            return res.status(404).json({ message: "Faculty not found" });
-        }
-
-        res.status(200).json({
-            timetable: faculty.timetable,
-            facultyDetails: {
-                name: faculty.name,
-                department: faculty.department,
-                role: faculty.role,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Error fetching timetable",
-            error: error.message
-        });
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
     }
+
+    res.status(200).json({
+      timetable: faculty.timetable,
+      facultyDetails: {
+        name: faculty.name,
+        department: faculty.department,
+        role: faculty.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching timetable",
+      error: error.message
+    });
+  }
 };
-
-
 
 // Update faculty timetable
 const updateFacultyTimetable = async (req, res) => {
@@ -205,6 +198,7 @@ const updateFacultyTimetable = async (req, res) => {
 };
 
 module.exports = {
+  upload, // Export the upload middleware for router
   addFaculty,
   getAllFaculty,
   getFacultyById,
@@ -212,5 +206,5 @@ module.exports = {
   deleteFaculty,
   getFacultyTimetable,
   updateFacultyTimetable,
- loginFaculty,
+  loginFaculty,
 };
