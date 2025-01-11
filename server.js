@@ -19,18 +19,6 @@ const PORT = process.env.PORT || 5000; // Use environment variable for PORT or d
 // Middleware
 app.use(express.json());
 
-// Set up the storage engine for Multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads"); // Set the destination folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Set the file name
-  },
-});
-
-// Create the upload middleware using the diskStorage configuration
-const upload = multer({ storage: storage });
 
 // Serve static files from the 'uploads' directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
