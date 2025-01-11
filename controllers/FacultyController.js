@@ -1,6 +1,6 @@
 const Faculty = require("../models/facultymodel");
 const bcrypt = require("bcryptjs");
- const multer = require("multer");
+ 
 // Login faculty
 const loginFaculty = async (req, res) => {
     try {
