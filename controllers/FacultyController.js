@@ -1,5 +1,5 @@
 const Faculty = require("../models/facultymodel");
-
+const bcrypt = require("bcryptjs");
  
 // Login faculty
 const loginFaculty = async (req, res) => {
@@ -8,7 +8,13 @@ const loginFaculty = async (req, res) => {
 
         const faculty = await Faculty.findOne({ facultyId: username });
 
-        if (!faculty || faculty.password !== password) {
+        if (!faculty) {
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        // Compare hashed password
+        const isMatch = await bcrypt.compare(password, faculty.password);
+        if (!isMatch) {
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
 
@@ -18,20 +24,17 @@ const loginFaculty = async (req, res) => {
     }
 };
 
-
-
-
-
 // Add a new faculty
 const addFaculty = async (req, res) => {
   try {
-    const { name, facultyId, role, department, timetable } = req.body;
+    const { name, facultyId, role, department, password, timetable } = req.body;
 
     const newFaculty = new Faculty({
       name,
       facultyId,
       role,
       department,
+      password, // Include password here
       timetable,
     });
 
