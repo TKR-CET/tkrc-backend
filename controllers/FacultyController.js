@@ -1,6 +1,6 @@
 const Faculty = require("../models/facultymodel");
 
-
+ 
 // Login faculty
 const loginFaculty = async (req, res) => {
     try {
