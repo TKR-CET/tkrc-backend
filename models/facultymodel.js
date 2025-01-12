@@ -1,4 +1,3 @@
-const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 
 // Timetable schema for each day
@@ -21,30 +20,12 @@ const FacultySchema = new mongoose.Schema({
   facultyId: { type: String, unique: true, required: true }, // Unique faculty ID
   role: { type: String, required: true }, // Role (e.g., Professor, Lecturer)
   department: { type: String, required: true }, // Department name
-  password: { type: String, required: true }, // Encrypted password
+  password: { type: String, required: true }, // Plain text password (not hashed)
   timetable: [TimetableSchema], // Timetable (array of timetables for different days)
   image: { type: String }, // Path to faculty's profile image
 }, {
   timestamps: true, // Add createdAt and updatedAt timestamps
 });
-
-// Middleware to hash the password before saving the faculty document
-FacultySchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10); // Generate salt for hashing
-    this.password = await bcrypt.hash(this.password, salt); // Hash the password
-    next();
-  } catch (error) {
-    next(error); // Pass error to the next middleware
-  }
-});
-
-// Compare plaintext password with hashed password
-FacultySchema.methods.comparePassword = async function (plaintextPassword) {
-  return bcrypt.compare(plaintextPassword, this.password);
-};
 
 // Create the Faculty model
 const Faculty = mongoose.model("Facultydata", FacultySchema);
