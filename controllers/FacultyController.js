@@ -15,8 +15,6 @@ const addFaculty = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Hash the password for security
-    const hashedPassword = await bcrypt.hash(password, 10);
     // Get the image file path if provided
     const imagePath = req.file ? req.file.path : null;
 
@@ -24,7 +22,6 @@ const addFaculty = async (req, res) => {
     let parsedTimetable;
     try {
       parsedTimetable = JSON.parse(timetable);
-      // Optionally, you can validate the structure of the timetable
       if (!Array.isArray(parsedTimetable) || parsedTimetable.length === 0) {
         return res.status(400).json({ message: "Timetable format is invalid" });
       }
@@ -38,9 +35,9 @@ const addFaculty = async (req, res) => {
       facultyId,
       role,
       department,
-      password: hashedPassword,
-      timetable: parsedTimetable,  // Store parsed timetable
-      image: imagePath,  // Store image path if uploaded
+      password, // Store plain text password
+      timetable: parsedTimetable, // Store parsed timetable
+      image: imagePath, // Store image path if uploaded
     });
 
     // Save the faculty to the database
@@ -85,7 +82,6 @@ const loginFaculty = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find the faculty by their ID (username)
     const faculty = await Faculty.findOne({ facultyId: username });
 
     if (!faculty) {
@@ -95,15 +91,14 @@ const loginFaculty = async (req, res) => {
       });
     }
 
-    // Direct string comparison (plain text)
-    if (password !== faculty.password) {
+    const isMatch = await bcrypt.compare(password, faculty.password);
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials: Incorrect password",
       });
     }
 
-    // Login successful, return user data
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -113,7 +108,6 @@ const loginFaculty = async (req, res) => {
       department: faculty.department,
     });
   } catch (error) {
-    // Handle server errors
     res.status(500).json({
       success: false,
       message: "Error during login",
@@ -217,3 +211,4 @@ module.exports = {
   updateFacultyTimetable,
   loginFaculty,
 };
+        
