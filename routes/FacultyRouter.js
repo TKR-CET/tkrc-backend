@@ -1,8 +1,11 @@
 const express = require("express");
-const { 
-  addFaculty, 
+const multer = require("multer"); 
+const path = require("path");
+ // Import multer for handling file uploads
+const {
+  addFaculty,
   updateFaculty,
-  upload, // Import upload from FacultyController.js
+
   getAllFaculty,
   getFacultyById,
   deleteFaculty,
@@ -13,11 +16,30 @@ const {
 
 const router = express.Router();
 
+
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../uploads"); // Ensure this path exists
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+
+
+
 // Add faculty with image upload
 router.post("/addfaculty", upload.single("image"), addFaculty);
 
+
 // Update faculty with image upload
-router.put("/:id", upload.single("image"), updateFaculty);
+router.put("/update/:id",upload.single('image'),updateFaculty);
 
 router.get("/getfaculty", getAllFaculty); // Get all faculty
 router.get("/:id", getFacultyById); // Get a faculty by ID/ Update faculty
