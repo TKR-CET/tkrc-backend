@@ -1,49 +1,58 @@
 const Faculty = require("../models/facultymodel");
 const bcrypt = require("bcryptjs");
 const path = require("path");
-const fs = require("fs");
-const multer = require("multer");
- 
-// Set up multer storage configuration for faculty images
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../uploads");
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath); // Create uploads folder if it doesn't exist
-    }
-    cb(null, uploadPath); // Set upload path
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Create unique filename
-  },
-});
 
-const upload = multer({ storage: storage });
-
-// Add faculty (with image upload)
 const addFaculty = async (req, res) => {
   try {
-    const { name, facultyId, role, department, password, timetable } = req.body;
-    const imagePath = req.file ? req.file.path : null; // Get the uploaded image path
+    console.log("Request Body:", req.body);
+    console.log("Uploaded File:", req.file);
 
+    // Extract data from the request body
+    const { name, facultyId, role, department, password, timetable } = req.body;
+
+    // Validate required fields
+    if (!name || !facultyId || !role || !department || !password || !timetable) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Hash the password for security
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Get the image file path if provided
+    const imagePath = req.file ? req.file.path : null;
+
+    // Validate the timetable format
+    let parsedTimetable;
+    try {
+      parsedTimetable = JSON.parse(timetable);
+      // Optionally, you can validate the structure of the timetable
+      if (!Array.isArray(parsedTimetable) || parsedTimetable.length === 0) {
+        return res.status(400).json({ message: "Timetable format is invalid" });
+      }
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid timetable JSON format" });
+    }
+
+    // Create a new Faculty object and save it to the database
     const newFaculty = new Faculty({
       name,
       facultyId,
       role,
       department,
-      password,
-      timetable,
-      image: imagePath, // Save the image path
+      password: hashedPassword,
+      timetable: parsedTimetable,  // Store parsed timetable
+      image: imagePath,  // Store image path if uploaded
     });
 
+    // Save the faculty to the database
     await newFaculty.save();
+
+    // Respond with success message
     res.status(201).json({ message: "Faculty added successfully", faculty: newFaculty });
   } catch (error) {
-    res.status(500).json({ message: "Error adding faculty", error });
+    console.error("Error in addFaculty:", error.message);
+    res.status(500).json({ message: "Error adding faculty", error: error.message });
   }
 };
-
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
   try {
@@ -56,7 +65,7 @@ const updateFaculty = async (req, res) => {
       facultyId,
       role,
       department,
-      password,
+      password: password ? await bcrypt.hash(password, 10) : undefined, // Update the password if provided
       timetable,
       image: imagePath, // Update the image path
     };
@@ -76,26 +85,23 @@ const loginFaculty = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find the faculty by their ID
     const faculty = await Faculty.findOne({ facultyId: username });
 
     if (!faculty) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid credentials: Faculty not found" 
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials: Faculty not found",
       });
     }
 
-    // Compare hashed password
     const isMatch = await bcrypt.compare(password, faculty.password);
     if (!isMatch) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid credentials: Incorrect password" 
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials: Incorrect password",
       });
     }
 
-    // Successful login
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -105,10 +111,10 @@ const loginFaculty = async (req, res) => {
       department: faculty.department,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Error during login", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Error during login",
+      error: error.message,
     });
   }
 };
@@ -155,8 +161,8 @@ const deleteFaculty = async (req, res) => {
 // Get faculty timetable
 const getFacultyTimetable = async (req, res) => {
   try {
-    const { id } = req.params; // 'id' is the MongoDB _id
-    const faculty = await Faculty.findById(id); // Query by _id
+    const { id } = req.params;
+    const faculty = await Faculty.findById(id);
 
     if (!faculty) {
       return res.status(404).json({ message: "Faculty not found" });
@@ -173,7 +179,7 @@ const getFacultyTimetable = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching timetable",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -198,7 +204,7 @@ const updateFacultyTimetable = async (req, res) => {
 };
 
 module.exports = {
-  upload, // Export the upload middleware for router
+  
   addFaculty,
   getAllFaculty,
   getFacultyById,
