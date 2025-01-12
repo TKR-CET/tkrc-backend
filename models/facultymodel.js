@@ -30,7 +30,6 @@ const FacultySchema = new mongoose.Schema({
 
 // Middleware to hash the password before saving the faculty document
 FacultySchema.pre("save", async function (next) {
-  // Only hash password if it's being modified or is new
   if (!this.isModified("password")) return next();
 
   try {
