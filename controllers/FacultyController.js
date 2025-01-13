@@ -1,24 +1,21 @@
 const Faculty = require("../models/facultymodel");
 const bcrypt = require("bcryptjs");
-const path = require("path"); 
+const path = require("path");
 
 const addFaculty = async (req, res) => {
   try {
-    console.log("Request Body:", req.body);
-    console.log("Uploaded File:", req.file);
-
-    // Extract data from the request body
     const { name, facultyId, role, department, password, timetable } = req.body;
 
-    // Validate required fields
     if (!name || !facultyId || !role || !department || !password || !timetable) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Get the image file path if provided
-    const imagePath = req.file ? req.file.path : null;
+    // Hash the password for security
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Validate the timetable format
+    // Get the image file URL if provided
+    const imagePath = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
+
     let parsedTimetable;
     try {
       parsedTimetable = JSON.parse(timetable);
@@ -29,64 +26,78 @@ const addFaculty = async (req, res) => {
       return res.status(400).json({ message: "Invalid timetable JSON format" });
     }
 
-    // Hash the password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create a new Faculty object and save it to the database
     const newFaculty = new Faculty({
       name,
       facultyId,
       role,
       department,
-      password: hashedPassword, // Store hashed password
-      timetable: parsedTimetable, // Store parsed timetable
-      image: imagePath, // Store image path if uploaded
+      password: hashedPassword,
+      timetable: parsedTimetable,
+      image: imagePath,
     });
 
-    // Save the faculty to the database
     await newFaculty.save();
 
-    // Respond with success message
     res.status(201).json({ message: "Faculty added successfully", faculty: newFaculty });
   } catch (error) {
     console.error("Error in addFaculty:", error.message);
     res.status(500).json({ message: "Error adding faculty", error: error.message });
   }
 };
+
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, facultyId, role, department, password, timetable } = req.body;
-    const imagePath = req.file ? req.file.path : null; // Get the uploaded image path
 
-    const updatedData = {
+    // Get the image file URL if provided
+    const imagePath = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
+
+    let updatedData = {
       name,
       facultyId,
       role,
       department,
-      password: password ? await bcrypt.hash(password, 10) : undefined, // Update the password if provided
       timetable,
-      image: imagePath, // Update the image path
     };
+
+    // Hash the password if provided
+    if (password) {
+      updatedData.password = await bcrypt.hash(password, 10);
+    }
+
+    // Include the image path if provided
+    if (imagePath) {
+      updatedData.image = imagePath;
+    }
 
     const updatedFaculty = await Faculty.findByIdAndUpdate(id, updatedData, { new: true });
 
-    if (!updatedFaculty) return res.status(404).json({ message: "Faculty not found" });
+    if (!updatedFaculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
 
     res.status(200).json({ message: "Faculty updated successfully", faculty: updatedFaculty });
   } catch (error) {
-    res.status(500).json({ message: "Error updating faculty", error });
+    console.error("Error in updateFaculty:", error.message);
+    res.status(500).json({ message: "Error updating faculty", error: error.message });
   }
 };
 
 // Login faculty
+
 const loginFaculty = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Find the faculty by their facultyId (username)
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Username and password are required",
+      });
+    }
+
     const faculty = await Faculty.findOne({ facultyId: username });
 
     if (!faculty) {
@@ -96,26 +107,29 @@ const loginFaculty = async (req, res) => {
       });
     }
 
-    // Check if the entered password matches the hashed password
-    const isPasswordMatch = await faculty.matchPassword(password);
-    if (!isPasswordMatch) {
+    // Compare passwords (this is within an async function)
+    const isMatch = await bcrypt.compare(password, faculty.password);
+
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials: Incorrect password",
       });
     }
 
-    // Login successful, return user data
+    // Successful login
     res.status(200).json({
       success: true,
       message: "Login successful",
-      facultyId: faculty._id,
-      name: faculty.name,
-      role: faculty.role,
-      department: faculty.department,
+      faculty: {
+        id: faculty._id,
+        name: faculty.name,
+        role: faculty.role,
+        department: faculty.department,
+      },
     });
   } catch (error) {
-    // Handle server errors
+    console.error("Error during login:", error.message);
     res.status(500).json({
       success: false,
       message: "Error during login",
@@ -123,6 +137,8 @@ const loginFaculty = async (req, res) => {
     });
   }
 };
+
+
 
 // Get a faculty by ID (including image)
 const getFacultyById = async (req, res) => {
@@ -195,17 +211,41 @@ const updateFacultyTimetable = async (req, res) => {
     const { id } = req.params;
     const { timetable } = req.body;
 
+    // Check if timetable is provided
+    if (!timetable) {
+      return res.status(400).json({ message: "Timetable is required" });
+    }
+
+    let parsedTimetable;
+    try {
+      // Parse and validate the timetable
+      parsedTimetable = JSON.parse(timetable);
+      if (!Array.isArray(parsedTimetable) || parsedTimetable.length === 0) {
+        return res.status(400).json({ message: "Timetable format is invalid" });
+      }
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid timetable JSON format" });
+    }
+
+    // Find the faculty by ID
     const faculty = await Faculty.findById(id);
 
-    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
 
-    faculty.timetable = timetable;
+    // Update the timetable
+    faculty.timetable = parsedTimetable;
     await faculty.save();
 
     res.status(200).json({ message: "Faculty timetable updated successfully", faculty });
   } catch (error) {
-    res.status(500).json({ message: "Error updating timetable", error });
+    console.error("Error in updateFacultyTimetable:", error.message);
+    res.status(500).json({ message: "Error updating timetable", error: error.message });
   }
+
+
+
 };
 
 module.exports = {
@@ -219,4 +259,3 @@ module.exports = {
   updateFacultyTimetable,
   loginFaculty,
 };
-        
