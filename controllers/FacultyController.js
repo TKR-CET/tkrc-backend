@@ -14,7 +14,7 @@ const addFaculty = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Get the image file URL if provided
-    const imagePath = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
+    const imagePath = req.file ? `https://tkrcet-backend.onrender.com/uploads/${req.file.filename}` : null;
 
     let parsedTimetable;
     try {
@@ -52,7 +52,7 @@ const updateFaculty = async (req, res) => {
     const { name, facultyId, role, department, password, timetable } = req.body;
 
     // Get the image file URL if provided
-    const imagePath = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
+    const imagePath = req.file ? `https://tkrcet-backend.onrender.com/uploads/${req.file.filename}` : null;
 
     let updatedData = {
       name,
