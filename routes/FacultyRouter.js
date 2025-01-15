@@ -3,7 +3,7 @@ const multer = require("multer");
 const path = require("path");
  // Import multer for handling file uploads
 const {
-  addFaculty,
+  addFaculty, 
   updateFaculty,
 getTodayTimetableByFacultyId,
   getAllFaculty,
