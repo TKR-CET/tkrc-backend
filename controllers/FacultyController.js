@@ -53,9 +53,9 @@ const getCurrentDay = () => {
 
 const getTodayTimetable = async (req, res) => {
   try {
-    const { facultyId } = req.params;
+    const { facultyId } = req.params; // Extract MongoDB facultyId from request parameters
 
-    // Fetch faculty data by facultyId
+    // Fetch faculty data by MongoDB facultyId
     const faculty = await Faculty.findOne({ facultyId });
 
     if (!faculty) {
@@ -80,16 +80,18 @@ const getTodayTimetable = async (req, res) => {
       subject: period.subject,
     }));
 
-    res.status(200).json({ classes });
+    // Return the formatted timetable
+    return res.status(200).json({ classes });
   } catch (error) {
-    console.error("Error fetching today's timetable:", error);
-    res.status(500).json({
-      message: "Error fetching today's timetable",
+    console.error("Error fetching today's timetable:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
       error: error.message,
     });
   }
 };
-                  
+
+module.exports = { getTodayTimetable };
 
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
