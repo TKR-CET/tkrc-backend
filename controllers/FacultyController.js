@@ -313,4 +313,5 @@ module.exports = {
   getFacultyTimetable,
   updateFacultyTimetable,
   loginFaculty,
+ getTodayTimetableByFacultyId
 };
