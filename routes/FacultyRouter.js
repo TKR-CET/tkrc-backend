@@ -5,8 +5,7 @@ const path = require("path");
 const {
   addFaculty,
   updateFaculty,
-getTodayTimetableByFacultyId,
-           
+
   getAllFaculty,
   getFacultyById,
   deleteFaculty,
@@ -41,12 +40,12 @@ router.post("/addfaculty", upload.single("image"), addFaculty);
 
 // Update faculty with image upload
 router.put("/update/:id",upload.single('image'),updateFaculty);
-router.get("/:facultyId/timetable-today",getTodayTimetableByFacultyId );
+
 router.get("/getfaculty", getAllFaculty); // Get all faculty
 router.get("/:id", getFacultyById); // Get a faculty by ID/ Update faculty
 router.delete("/:id", deleteFaculty); // Delete faculty
 router.get("/:id/timetable", getFacultyTimetable); // Get faculty timetable
-router.put("/update/:id/timetable", updateFacultyTimetable); // Update faculty timetable
+router.put("/:id/timetable", updateFacultyTimetable); // Update faculty timetable
 router.post("/login", loginFaculty);
 
 module.exports = router;
