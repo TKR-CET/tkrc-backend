@@ -51,12 +51,12 @@ const getCurrentDay = () => {
   return days[currentDate.getDay() - 1]; // Convert to Monday-based index
 };
 
-const getTodayTimetable = async (req, res) => {
+const getTodayTimetableByMongoId = async (req, res) => {
   try {
-    const { facultyId } = req.params; // Extract MongoDB facultyId from request parameters
+    const { id } = req.params; // MongoDB _id from the request parameters
 
-    // Fetch faculty data by MongoDB facultyId
-    const faculty = await Faculty.findOne({ facultyId });
+    // Fetch faculty data by MongoDB _id
+    const faculty = await Faculty.findById(id);
 
     if (!faculty) {
       return res.status(404).json({ message: "Faculty not found" });
@@ -91,7 +91,6 @@ const getTodayTimetable = async (req, res) => {
   }
 };
 
-module.exports = { getTodayTimetable };
 
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
@@ -306,5 +305,6 @@ module.exports = {
   getFacultyTimetable,
   updateFacultyTimetable,
   loginFaculty,
-  getTodayTimetable,
+  getTodayTimetableByMongoId
 };
+      
