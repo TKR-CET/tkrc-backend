@@ -45,6 +45,52 @@ const addFaculty = async (req, res) => {
   }
 };
 
+const getCurrentDay = () => {
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const currentDate = new Date();
+  return days[currentDate.getDay() - 1]; // Convert to Monday-based index
+};
+
+const getTodayTimetable = async (req, res) => {
+  try {
+    const { facultyId } = req.params;
+
+    // Fetch faculty data by facultyId
+    const faculty = await Faculty.findOne({ facultyId });
+
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    // Get the current day
+    const currentDay = getCurrentDay();
+
+    // Find today's timetable
+    const todayTimetable = faculty.timetable.find((entry) => entry.day === currentDay);
+
+    if (!todayTimetable || todayTimetable.periods.length === 0) {
+      return res.status(200).json({ classes: [], message: "No classes today" });
+    }
+
+    // Format the response for the frontend
+    const classes = todayTimetable.periods.map((period) => ({
+      programYear: `B.Tech ${period.year}`, // Add "B.Tech" prefix to year
+      department: period.department,
+      section: period.section,
+      subject: period.subject,
+    }));
+
+    res.status(200).json({ classes });
+  } catch (error) {
+    console.error("Error fetching today's timetable:", error);
+    res.status(500).json({
+      message: "Error fetching today's timetable",
+      error: error.message,
+    });
+  }
+};
+                  
+
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
   try {
@@ -258,4 +304,5 @@ module.exports = {
   getFacultyTimetable,
   updateFacultyTimetable,
   loginFaculty,
+  getTodayTimetable,
 };
