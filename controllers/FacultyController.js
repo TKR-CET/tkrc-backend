@@ -96,10 +96,6 @@ const getTodayTimetableByFacultyId = async (req, res) => {
 
 
 
-
-
-
-
 // Update faculty (with image upload)
 const updateFaculty = async (req, res) => {
   try {
