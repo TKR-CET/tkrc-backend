@@ -40,7 +40,7 @@ router.post("/addfaculty", upload.single("image"), addFaculty);
 
 // Update faculty with image upload
 router.put("/update/:id",upload.single('image'),updateFaculty);
-router.get("/faculty/:facultyId/timetable-today", getTodayTimetableByFacultyId);
+router.get("/:facultyId/timetable-today", getTodayTimetableByFacultyId);
 router.get("/getfaculty", getAllFaculty); // Get all faculty
 router.get("/:id", getFacultyById); // Get a faculty by ID/ Update faculty
 router.delete("/:id", deleteFaculty); // Delete faculty
