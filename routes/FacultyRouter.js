@@ -15,7 +15,7 @@ const storage = new CloudinaryStorage({
 // Configure Multer to use Cloudinary storage
 const upload = multer({ storage });
 
-const express = require("express");
+
 const {
   addFaculty,
   updateFaculty,
