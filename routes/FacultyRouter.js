@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer")
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../cloudnaryConfig.js");
-
+ 
 // Set up Cloudinary storage
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
