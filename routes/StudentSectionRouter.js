@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const studentController = require('../controllers/studentController');
+const studentController = require('../controllers/StudentSectionController');
 
 // Add Year
 router.post('/years', studentController.addYear);
