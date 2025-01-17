@@ -13,7 +13,7 @@ router.post('/:yearId/departments', studentController.addDepartmentToYear);
 router.post('/:yearId/:departmentId/sections', studentController.addSectionToDepartment);
 
 // Add Students to a Section
-router.post('/years/:yearId/departments/:departmentId/sections/:sectionId/students', studentController.addStudentsToSection);
+router.post('/:yearId/:departmentId/:sectionId/students', studentController.addStudentsToSection);
 
 // Get Students in a Section
 router.get('/:yearId/:departmentId/:sectionId/students', studentController.getStudentsBySection);
