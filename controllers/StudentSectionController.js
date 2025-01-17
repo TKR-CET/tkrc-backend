@@ -3,15 +3,15 @@ const Year = require("../models/studentSection");
 // Get students in a section 
 const getStudentsBySection = async (req, res) => {
   try {
-    const { yearId, departmentId, sectionId } = req.params; 
+    const { yearId, departmentId, sectionId } = req.params;
 
-    const year = await Year.findById(yearId);
+    const year = await Year.findOne({ year: yearId });  // Find Year by year string
     if (!year) return res.status(404).json({ message: "Year not found" });
 
-    const department = year.departments.id(departmentId);
+    const department = year.departments.find(dept => dept.name === departmentId);  // Find department by name
     if (!department) return res.status(404).json({ message: "Department not found" });
 
-    const section = department.sections.id(sectionId);
+    const section = department.sections.find(sec => sec.name === sectionId);  // Find section by name
     if (!section) return res.status(404).json({ message: "Section not found" });
 
     res.status(200).json({ students: section.students });
@@ -30,13 +30,13 @@ const addStudentsToSection = async (req, res) => {
       return res.status(400).json({ message: "Students must be an array" });
     }
 
-    const year = await Year.findById(yearId);
+    const year = await Year.findOne({ year: yearId });  // Find Year by year string
     if (!year) return res.status(404).json({ message: "Year not found" });
 
-    const department = year.departments.id(departmentId);
+    const department = year.departments.find(dept => dept.name === departmentId);  // Find department by name
     if (!department) return res.status(404).json({ message: "Department not found" });
 
-    const section = department.sections.id(sectionId);
+    const section = department.sections.find(sec => sec.name === sectionId);  // Find section by name
     if (!section) return res.status(404).json({ message: "Section not found" });
 
     students.forEach((student) => {
@@ -64,13 +64,13 @@ const upsertSectionTimetable = async (req, res) => {
       return res.status(400).json({ message: "Timetable must be an array" });
     }
 
-    const year = await Year.findById(yearId);
+    const year = await Year.findOne({ year: yearId });  // Find Year by year string
     if (!year) return res.status(404).json({ message: "Year not found" });
 
-    const department = year.departments.id(departmentId);
+    const department = year.departments.find(dept => dept.name === departmentId);  // Find department by name
     if (!department) return res.status(404).json({ message: "Department not found" });
 
-    const section = department.sections.id(sectionId);
+    const section = department.sections.find(sec => sec.name === sectionId);  // Find section by name
     if (!section) return res.status(404).json({ message: "Section not found" });
 
     section.timetable = timetable;
@@ -100,10 +100,10 @@ const addYear = async (req, res) => {
 // Add a department to a year
 const addDepartmentToYear = async (req, res) => {
   try {
-    const { yearId } = req.params;
-    const { name } = req.body;
+    const { yearId } = req.params;  // Example: "B.Tech I"
+    const { name } = req.body;  // Example: "CSE"
 
-    const year = await Year.findById(yearId);
+    const year = await Year.findOne({ year: yearId });  // Find Year by year string
     if (!year) return res.status(404).json({ message: "Year not found" });
 
     year.departments.push({ name, sections: [] });
@@ -118,13 +118,13 @@ const addDepartmentToYear = async (req, res) => {
 // Add a section to a department
 const addSectionToDepartment = async (req, res) => {
   try {
-    const { yearId, departmentId } = req.params;
-    const { name } = req.body;
+    const { yearId, departmentId } = req.params;  // Example: "B.Tech I", "CSE"
+    const { name } = req.body;  // Example: "A"
 
-    const year = await Year.findById(yearId);
+    const year = await Year.findOne({ year: yearId });  // Find Year by year string
     if (!year) return res.status(404).json({ message: "Year not found" });
 
-    const department = year.departments.id(departmentId);
+    const department = year.departments.find(dept => dept.name === departmentId);  // Find department by name
     if (!department) return res.status(404).json({ message: "Department not found" });
 
     department.sections.push({ name, timetable: [], students: [] });
