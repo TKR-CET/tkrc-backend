@@ -1,5 +1,5 @@
 const Attendance = require("../models/studentAttendance");
- 
+
 // Mark Attendance
 const markAttendance = async (req, res) => {
   try {
@@ -76,7 +76,35 @@ const markAttendance = async (req, res) => {
   }
 };
 
-// Fetch Attendance Records
+// Fetch Attendance Records by Date
+const fetchAttendanceByDate = async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
+    }
+
+    const attendanceRecords = await Attendance.find({ date });
+
+    if (!attendanceRecords.length) {
+      return res.status(404).json({ message: "No attendance records found for the given date" });
+    }
+
+    res.status(200).json({
+      message: "Attendance records fetched successfully for the date",
+      data: attendanceRecords,
+    });
+  } catch (error) {
+    console.error("Error fetching attendance by date:", error.message || error);
+    res.status(500).json({
+      message: "An error occurred while fetching attendance by date",
+      error: error.message || error,
+    });
+  }
+};
+
+// Fetch Attendance Records with Filters
 const fetchAttendance = async (req, res) => {
   try {
     const { date, year, department, section } = req.query;
@@ -135,5 +163,6 @@ const checkAttendance = async (req, res) => {
 module.exports = {
   markAttendance,
   fetchAttendance,
+  fetchAttendanceByDate,
   checkAttendance,
 };
