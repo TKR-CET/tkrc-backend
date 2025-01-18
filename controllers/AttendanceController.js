@@ -58,7 +58,7 @@ const markAttendance = async (req, res) => {
       }
     }
 
-    res.status(201).json({ message: "Attendance marked successfully for all selected periods!",newAttendance });
+    res.status(201).json({newAttendance });
   } catch (error) {
     console.error("Error marking attendance:", error.message || error);
     res.status(500).json({
