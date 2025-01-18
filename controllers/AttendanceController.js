@@ -10,12 +10,10 @@ const markAttendance = async (req, res) => {
       return res.status(400).json({ message: "All mandatory fields are required" });
     }
 
-    // Validate periods is an array
     if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number")) {
       return res.status(400).json({ message: "Periods must be an array of numbers" });
     }
 
-    // Validate attendance is an array of valid entries
     if (!Array.isArray(attendance)) {
       return res.status(400).json({ message: "Attendance must be an array of objects" });
     }
@@ -30,43 +28,37 @@ const markAttendance = async (req, res) => {
       return { rollNumber, name, status: status.toLowerCase() };
     });
 
-    // Find existing attendance for the given date, periods, and section
-    const existingAttendance = await Attendance.findOne({ date, periods, year, department, section });
+    // Iterate through periods and create/update records for each
+    for (const period of periods) {
+      const existingAttendance = await Attendance.findOne({ date, period, year, department, section });
 
-    if (existingAttendance) {
-      // Update existing attendance
-      existingAttendance.subject = subject;
-      existingAttendance.topic = topic;
-      existingAttendance.remarks = remarks;
-      existingAttendance.attendance = formattedAttendance;
+      if (existingAttendance) {
+        // Update existing attendance
+        existingAttendance.subject = subject;
+        existingAttendance.topic = topic;
+        existingAttendance.remarks = remarks;
+        existingAttendance.attendance = formattedAttendance;
 
-      await existingAttendance.save();
+        await existingAttendance.save();
+      } else {
+        // Create new attendance record
+        const newAttendance = new Attendance({
+          date,
+          period, // Single period
+          subject,
+          topic,
+          remarks,
+          year,
+          department,
+          section,
+          attendance: formattedAttendance,
+        });
 
-      res.status(200).json({
-        message: "Attendance updated successfully!",
-        data: existingAttendance,
-      });
-    } else {
-      // Save new attendance record
-      const newAttendance = new Attendance({
-        date,
-        periods,
-        subject,
-        topic,
-        remarks,
-        year,
-        department,
-        section,
-        attendance: formattedAttendance,
-      });
-
-      await newAttendance.save();
-
-      res.status(201).json({
-        message: "Attendance successfully marked!",
-        data: newAttendance,
-      });
+        await newAttendance.save();
+      }
     }
+
+    res.status(201).json({ message: "Attendance marked successfully for all selected periods!" });
   } catch (error) {
     console.error("Error marking attendance:", error.message || error);
     res.status(500).json({
@@ -76,6 +68,11 @@ const markAttendance = async (req, res) => {
   }
 };
 
+
+    
+      
+    
+  
 // Fetch Attendance Records by Date
 const fetchAttendanceByDate = async (req, res) => {
   try {
