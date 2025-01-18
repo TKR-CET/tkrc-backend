@@ -3,6 +3,7 @@ const {
   markAttendance,
   fetchAttendance,
   checkAttendance,
+   fetchAttendanceByDate
 } = require("../controllers/AttendanceController");
 
 const router = express.Router();
@@ -20,7 +21,7 @@ router.post("/mark-attendance", markAttendance);
  * @access  Public
  */
 router.get("/fetch-attendance", fetchAttendance);
-
+router.get("/date",fetchAttendanceByDate)
 /**
  * @route   GET /Attendance/check-attendance
  * @desc    Check if attendance is already marked for a specific date, year, department, and section
