@@ -5,6 +5,14 @@ const markAttendance = async (req, res) => {
   try {
     const { date, periods, subject, topic, remarks, year, department, section, attendance } = req.body;
 
+    // Check if the date is today
+    const todayDate = new Date().toISOString().split("T")[0];
+    if (date !== todayDate) {
+      return res.status(403).json({
+        message: "Attendance can only be edited or marked for the current date.",
+      });
+    }
+
     // Validate required fields
     if (!date || !periods || !subject || !topic || !year || !department || !section || !attendance) {
       return res.status(400).json({ message: "All mandatory fields are required" });
@@ -30,15 +38,12 @@ const markAttendance = async (req, res) => {
       return { rollNumber, name, status: status.toLowerCase() };
     });
 
-    // Store or update attendance for each period
+    // Process attendance
     const attendanceResponses = [];
-
     for (const period of periods) {
-      // Check if attendance already exists for this period
       const existingAttendance = await Attendance.findOne({ date, period, year, department, section });
 
       if (existingAttendance) {
-        // Update the existing attendance record
         existingAttendance.subject = subject;
         existingAttendance.topic = topic;
         existingAttendance.remarks = remarks;
@@ -47,10 +52,9 @@ const markAttendance = async (req, res) => {
         const updatedAttendance = await existingAttendance.save();
         attendanceResponses.push({ period, record: updatedAttendance, status: "updated" });
       } else {
-        // Create a new attendance record
         const newAttendance = new Attendance({
           date,
-          period, // Store a single period
+          period,
           subject,
           topic,
           remarks,
