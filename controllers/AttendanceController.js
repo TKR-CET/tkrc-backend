@@ -1,7 +1,7 @@
 const Attendance = require("../models/studentAttendance");
-   
+  
 // Mark Attendance 
-const markAttendance = async (req, res) => {
+const markAttendanceg = async (req, res) => {
   try {
     const { date, periods, subject, topic, remarks, year, department, section, attendance } = req.body;
 
@@ -155,3 +155,4 @@ module.exports = {
   fetchAttendanceByDate,
   checkAttendance,
 };
+         
