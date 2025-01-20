@@ -5,27 +5,9 @@ const markAttendance = async (req, res) => {
   try {
     const { date, periods, subject, topic, remarks, year, department, section, attendance } = req.body;
 
-    // Check if the date is today
-    const todayDate = new Date().toISOString().split("T")[0];
-    if (date !== todayDate) {
-      return res.status(403).json({
-        message: "Attendance can only be edited or marked for the current date.",
-      });
-    }
-
-    // Validate required fields
-    if (!date || !periods || !subject || !topic || !year || !department || !section || !attendance) {
-      return res.status(400).json({ message: "All mandatory fields are required" });
-    }
-
-    // Validate that periods is a non-empty array of numbers
-    if (!Array.isArray(periods) || periods.length === 0 || periods.some((p) => typeof p !== "number")) {
-      return res.status(400).json({ message: "Periods must be a non-empty array of numbers" });
-    }
-
-    // Validate that attendance is a valid array of objects
-    if (!Array.isArray(attendance) || attendance.length === 0) {
-      return res.status(400).json({ message: "Attendance must be a non-empty array of objects" });
+    // Validate periods
+    if (!Array.isArray(periods) || periods.some((p) => typeof p !== "number" || p === null || p === undefined)) {
+      return res.status(400).json({ message: "Periods must be an array of valid numbers" });
     }
 
     const formattedAttendance = attendance.map(({ rollNumber, name, status }) => {
@@ -38,7 +20,7 @@ const markAttendance = async (req, res) => {
       return { rollNumber, name, status: status.toLowerCase() };
     });
 
-    // Process attendance
+    // Process attendance for each period
     const attendanceResponses = [];
     for (const period of periods) {
       const existingAttendance = await Attendance.findOne({ date, period, year, department, section });
