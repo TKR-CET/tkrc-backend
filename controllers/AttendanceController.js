@@ -150,8 +150,10 @@ const checkAttendance = async (req, res) => {
     // Fetch attendance records for the specific date, year, department, and section
     const attendanceRecords = await Attendance.find({ date, year, department, section });
 
-    // Extract and store marked periods
-    const markedPeriods = attendanceRecords.map((record) => record.period);
+    // Extract and store marked periods, ensuring no null periods
+    const markedPeriods = attendanceRecords
+      .map((record) => record.period)
+      .filter((period) => period !== null && period !== undefined); // Remove null or undefined periods
 
     res.status(200).json({
       message: "Checked existing attendance records successfully",
