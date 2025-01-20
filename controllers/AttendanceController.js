@@ -138,7 +138,7 @@ const fetchAttendance = async (req, res) => {
   }
 };
 
-// Check Existing Attendance
+// Check Existing Attendance and Disable Marked Periods
 const checkAttendance = async (req, res) => {
   try {
     const { date, year, department, section } = req.query;
@@ -150,8 +150,8 @@ const checkAttendance = async (req, res) => {
     // Fetch attendance records for the specific date, year, department, and section
     const attendanceRecords = await Attendance.find({ date, year, department, section });
 
-    // Extract periods that already have attendance marked
-    const markedPeriods = attendanceRecords.flatMap((record) => record.periods);
+    // Extract and store marked periods
+    const markedPeriods = attendanceRecords.map((record) => record.period);
 
     res.status(200).json({
       message: "Checked existing attendance records successfully",
@@ -165,7 +165,6 @@ const checkAttendance = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   markAttendance,
   fetchAttendance,
